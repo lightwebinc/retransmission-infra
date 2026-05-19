@@ -39,12 +39,14 @@ locals {
       cache_max_keys = tostring(var.cache_max_keys)
 
       # Rate limiting
-      rl_ip_rate      = var.rl_ip_rate
-      rl_ip_burst     = tostring(var.rl_ip_burst)
-      rl_sender_rate  = var.rl_sender_rate
-      rl_sender_burst = tostring(var.rl_sender_burst)
-      rl_global_rate  = var.rl_global_rate
-      rl_global_burst = tostring(var.rl_global_burst)
+      rl_ip_rate         = tostring(var.rl_ip_rate)
+      rl_ip_burst        = tostring(var.rl_ip_burst)
+      rl_chain_rate      = tostring(var.rl_chain_rate)
+      rl_chain_window    = var.rl_chain_window
+      rl_group_rate      = tostring(var.rl_group_rate)
+      rl_group_burst     = tostring(var.rl_group_burst)
+      rl_sequence_max    = tostring(var.rl_sequence_max)
+      rl_sequence_window = var.rl_sequence_window
 
       # Observability
       metrics_addr  = var.metrics_addr

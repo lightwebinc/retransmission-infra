@@ -15,7 +15,7 @@ retry_user: "bitcoin-retry-endpoint"
 retry_group: "bitcoin-retry-endpoint"
 
 # Go toolchain version (used when building from source)
-go_version: "1.24.5"
+go_version: "1.25.10"
 go_install_dir: "/usr/local/go"
 
 # ------------------------------------------------------------

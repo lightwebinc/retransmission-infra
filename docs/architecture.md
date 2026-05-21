@@ -21,12 +21,16 @@ nodes, which cache frames and re-multicast missing data.
 
 ## Protocol details
 
-NACK/ACK/MISS wire formats, cache indexing scheme, rate limiting tiers, and
-beacon discovery are documented in the service and project repos:
+Deploys `bitcoin-retry-endpoint`, which caches and retransmits BRC-124/BRC-128 tx frames,
+BRC-130 fragments, BRC-131 block control, BRC-132 subtree data, and BRC-134 anchor frames.
+All frame versions share a single `HashKey ∥ SeqNum` cache key, so the retransmit path is
+frame-version-agnostic. NACK/ACK/MISS wire formats, cache indexing scheme, rate limiting
+tiers, and beacon discovery are documented in the service and project repos:
 
 - [bitcoin-retry-endpoint — Architecture](https://github.com/lightwebinc/bitcoin-retry-endpoint/blob/main/docs/architecture.md)
 - [bitcoin-retry-endpoint — Configuration](https://github.com/lightwebinc/bitcoin-retry-endpoint/blob/main/docs/configuration.md)
 - [bitcoin-multicast — DESIGN.md](https://github.com/lightwebinc/bitcoin-multicast/blob/main/DESIGN.md)
+- BRC drafts: `bitcoin-multicast/docs/brc-{124,126,127,128,129,130,131,132,133,134,135}-*.md`
 
 ## Data plane
 

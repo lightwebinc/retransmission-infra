@@ -4,3 +4,10 @@
 
 - name: Install Go toolchain
   ansible.builtin.include_tasks: go.yml
+
+- name: OS package upgrade (on-demand)
+  ansible.builtin.include_tasks:
+    file: os_update.yml
+    apply:
+      tags: [os_update]
+  tags: [os_update, never]

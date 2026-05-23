@@ -33,10 +33,14 @@ locals {
       mc_route_prefix = var.mc_route_prefix
 
       # Cache
-      cache_backend  = var.cache_backend
-      redis_addr     = var.redis_addr
-      cache_ttl      = var.cache_ttl
-      cache_max_keys = tostring(var.cache_max_keys)
+      cache_backend     = var.cache_backend
+      redis_addr        = var.redis_addr
+      cache_ttl         = var.cache_ttl
+      cache_ttl_tx      = var.cache_ttl_tx
+      cache_ttl_block   = var.cache_ttl_block
+      cache_ttl_subtree = var.cache_ttl_subtree
+      cache_ttl_anchor  = var.cache_ttl_anchor
+      cache_max_keys    = tostring(var.cache_max_keys)
 
       # Rate limiting
       rl_ip_rate         = tostring(var.rl_ip_rate)

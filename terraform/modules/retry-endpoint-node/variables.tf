@@ -28,9 +28,33 @@ variable "cache_max_keys" {
 }
 
 variable "cache_ttl" {
-  description = "Cache TTL (Go duration)"
+  description = "Global fallback cache TTL (Go duration); collapses all per-FrameVer TTLs when explicitly set"
   type        = string
   default     = "60s"
+}
+
+variable "cache_ttl_tx" {
+  description = "Cache TTL for FrameVer V2 (BRC-124/128 regular tx)"
+  type        = string
+  default     = "60s"
+}
+
+variable "cache_ttl_block" {
+  description = "Cache TTL for FrameVer V4 (BRC-131 block control)"
+  type        = string
+  default     = "10m"
+}
+
+variable "cache_ttl_subtree" {
+  description = "Cache TTL for FrameVer V5 (BRC-132 subtree data)"
+  type        = string
+  default     = "5m"
+}
+
+variable "cache_ttl_anchor" {
+  description = "Cache TTL for FrameVer V6 (BRC-134 anchor tx)"
+  type        = string
+  default     = "2m"
 }
 
 variable "egress_iface" {

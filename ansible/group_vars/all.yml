@@ -36,7 +36,11 @@ mc_group_id: "0x000B"              # IANA group-id (default 0x000B = IANA Bitcoi
 # Cache configuration
 cache_backend: "memory"        # memory | redis
 redis_addr: ""                # Redis address (if cache_backend=redis; also enables dedup when cache_backend=memory)
-cache_ttl: "60s"              # Cache TTL
+cache_ttl: "60s"              # Global fallback TTL; collapses all per-FrameVer TTLs when explicitly overridden
+cache_ttl_tx: "60s"           # FrameVer V2 (BRC-124/128 regular tx) cache TTL
+cache_ttl_block: "10m"        # FrameVer V4 (BRC-131 block control) cache TTL
+cache_ttl_subtree: "5m"       # FrameVer V5 (BRC-132 subtree data) cache TTL
+cache_ttl_anchor: "2m"        # FrameVer V6 (BRC-134 anchor tx) cache TTL
 dedup_window: "2s"            # Cross-instance retransmit dedup window; must be < NACK_BACKOFF_MAX (5s) so lost retransmits can be re-sent
 cache_max_keys: 100000        # Maximum cache entries
 

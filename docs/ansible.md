@@ -51,7 +51,11 @@ See `ansible/group_vars/all.yml` for the full list. Quick reference:
 | `shard_bits` | `2` | Must match fabric |
 | `cache_backend` | `memory` | Or `redis` |
 | `redis_addr` | `""` | Redis address (if cache_backend=redis) |
-| `cache_ttl` | `10m` | Cache entry lifetime |
+| `cache_ttl` | `60s` | Global fallback cache TTL; collapses per-FrameVer TTLs when explicitly set |
+| `cache_ttl_tx` | `60s` | FrameVer V2 (BRC-124/128 regular tx) cache TTL |
+| `cache_ttl_block` | `10m` | FrameVer V4 (BRC-131 block control) cache TTL |
+| `cache_ttl_subtree` | `5m` | FrameVer V5 (BRC-132 subtree data) cache TTL |
+| `cache_ttl_anchor` | `2m` | FrameVer V6 (BRC-134 anchor tx) cache TTL |
 | `cache_max_keys` | `100000` | Maximum cache entries |
 | `rl_ip_rate` | `1000/s` | Per-IP rate limit |
 | `rl_sender_rate` | `10000/s` | Per-sender rate limit |

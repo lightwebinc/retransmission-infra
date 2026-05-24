@@ -41,7 +41,6 @@ ansible-playbook -i inventory/hosts.yml site.yml
 - [Security (perimeter firewall)](docs/security.md)
 - [Networking](docs/networking.md)
 - [Terraform](docs/terraform.md)
-- [LXD lab](docs/lxd-lab.md)
 - OS notes: [Ubuntu 24.04](docs/os/ubuntu-24.04.md), [FreeBSD 14](docs/os/freebsd-14.md)
 
 ## Repository Layout

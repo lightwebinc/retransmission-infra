@@ -8,7 +8,7 @@ Ansible and Terraform automation for deploying
 nodes — the NACK-based retransmission cache in the BSV multicast pipeline.
 
 ```text
-bitcoin-shard-listener ──NACK──▶  retry-endpoint  ──retransmit──▶  FF05::<shard>:9001
+shard-listener ──NACK──▶  retry-endpoint  ──retransmit──▶  FF05::<shard>:9001
                                   (this repo deploys)
 ```
 

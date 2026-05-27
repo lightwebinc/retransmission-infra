@@ -88,7 +88,7 @@ ansible-playbook site.yml --tags firewall
 ansible-playbook site.yml -l retry-endpoint-01
 ```
 
-## Known issues (inherited from `bitcoin-ingress` / `bitcoin-listener`)
+## Known issues (inherited from `ingress-infra` / `listener-infra`)
 
 - Ubuntu LXD images may lack `acl` — installed by the `common` role.
 - The `git` module fails in some LXD images with "unsafe repository"; the

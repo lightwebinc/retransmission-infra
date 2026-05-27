@@ -29,8 +29,8 @@ tiers, and beacon discovery are documented in the service and project repos:
 
 - [retry-endpoint — Architecture](https://github.com/lightwebinc/retry-endpoint/blob/main/docs/architecture.md)
 - [retry-endpoint — Configuration](https://github.com/lightwebinc/retry-endpoint/blob/main/docs/configuration.md)
-- [bitcoin-multicast — DESIGN.md](https://github.com/lightwebinc/bitcoin-multicast/blob/main/DESIGN.md)
-- BRC drafts: `bitcoin-multicast/docs/brc-{124,126,127,128,129,130,131,132,133,134,135}-*.md`
+- [bsv-multicast — DESIGN.md](https://github.com/lightwebinc/bsv-multicast/blob/main/DESIGN.md)
+- BRC drafts: `bsv-multicast/docs/brc-{124,126,127,128,129,130,131,132,133,134,135}-*.md`
 
 ## Data plane
 
@@ -79,7 +79,7 @@ a separate Redis connection is opened with the `bre:dedup:` key prefix
 
 ## Relationship to other repos
 
-| Concern       | `retransmission-infra` (this repo) | `bitcoin-listener` | `bitcoin-ingress`  |
+| Concern       | `retransmission-infra` (this repo) | `listener-infra` | `ingress-infra`  |
 | ------------- | ------------------------------------ | ------------------ | ------------------ |
 | Direction     | RX NACK → TX re-multicast            | RX multicast       | TX multicast       |
 | Primary iface | `mc_iface` (receive)                 | `ingress_iface`    | `egress_iface`     |

@@ -19,8 +19,8 @@ Both must stay aligned.
 
 The `firewall` Ansible role deploys:
 
-- **Linux**: `/etc/nftables.d/bitcoin-retry-endpoint.nft`
-- **FreeBSD**: `/etc/pf.d/bitcoin-retry-endpoint.conf`
+- **Linux**: `/etc/nftables.d/retry-endpoint.nft`
+- **FreeBSD**: `/etc/pf.d/retry-endpoint.conf`
 
 ### Input chain (inbound)
 
@@ -75,7 +75,7 @@ the host-level ruleset.
 
 ## Hardening
 
-The systemd unit (`bitcoin-retry-endpoint.service`) includes:
+The systemd unit (`retry-endpoint.service`) includes:
 
 - `NoNewPrivileges=true`
 - `PrivateTmp=true`
@@ -84,4 +84,4 @@ The systemd unit (`bitcoin-retry-endpoint.service`) includes:
 - `AmbientCapabilities=CAP_NET_BIND_SERVICE`
 
 The FreeBSD rc.d script runs the daemon as the unprivileged
-`bitcoin-retry-endpoint` user.
+`retry-endpoint` user.

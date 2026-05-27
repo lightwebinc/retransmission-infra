@@ -1,7 +1,7 @@
 # Architecture
 
-`bitcoin-retransmission` is the deployment/operations repo for
-[`bitcoin-retry-endpoint`](https://github.com/lightwebinc/bitcoin-retry-endpoint) — the
+`retransmission-infra` is the deployment/operations repo for
+[`retry-endpoint`](https://github.com/lightwebinc/retry-endpoint) — the
 NACK-aware retransmission node in the Bitcoin shard multicast fabric. When
 listeners detect sequence gaps, they send NACK datagrams to retry-endpoint
 nodes, which cache frames and re-multicast missing data.
@@ -21,14 +21,14 @@ nodes, which cache frames and re-multicast missing data.
 
 ## Protocol details
 
-Deploys `bitcoin-retry-endpoint`, which caches and retransmits BRC-124/BRC-128 tx frames,
+Deploys `retry-endpoint`, which caches and retransmits BRC-124/BRC-128 tx frames,
 BRC-130 fragments, BRC-131 block control, BRC-132 subtree data, and BRC-134 anchor frames.
 All frame versions share a single `HashKey ∥ SeqNum` cache key, so the retransmit path is
 frame-version-agnostic. NACK/ACK/MISS wire formats, cache indexing scheme, rate limiting
 tiers, and beacon discovery are documented in the service and project repos:
 
-- [bitcoin-retry-endpoint — Architecture](https://github.com/lightwebinc/bitcoin-retry-endpoint/blob/main/docs/architecture.md)
-- [bitcoin-retry-endpoint — Configuration](https://github.com/lightwebinc/bitcoin-retry-endpoint/blob/main/docs/configuration.md)
+- [retry-endpoint — Architecture](https://github.com/lightwebinc/retry-endpoint/blob/main/docs/architecture.md)
+- [retry-endpoint — Configuration](https://github.com/lightwebinc/retry-endpoint/blob/main/docs/configuration.md)
 - [bitcoin-multicast — DESIGN.md](https://github.com/lightwebinc/bitcoin-multicast/blob/main/DESIGN.md)
 - BRC drafts: `bitcoin-multicast/docs/brc-{124,126,127,128,129,130,131,132,133,134,135}-*.md`
 
@@ -79,7 +79,7 @@ a separate Redis connection is opened with the `bre:dedup:` key prefix
 
 ## Relationship to other repos
 
-| Concern       | `bitcoin-retransmission` (this repo) | `bitcoin-listener` | `bitcoin-ingress`  |
+| Concern       | `retransmission-infra` (this repo) | `bitcoin-listener` | `bitcoin-ingress`  |
 | ------------- | ------------------------------------ | ------------------ | ------------------ |
 | Direction     | RX NACK → TX re-multicast            | RX multicast       | TX multicast       |
 | Primary iface | `mc_iface` (receive)                 | `ingress_iface`    | `egress_iface`     |

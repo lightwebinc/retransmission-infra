@@ -1,4 +1,4 @@
-# nftables ruleset for bitcoin-retry-endpoint
+# nftables ruleset for retry-endpoint
 # Managed by Ansible — do not edit manually
 #
 # Simplified perimeter model (UDP-only, no BGP):
@@ -10,7 +10,7 @@
 #   * Non-fabric interfaces: management only (SSH + metrics scrape)
 #   * Forwarding: disabled
 
-table inet bitcoin-retry-endpoint {
+table inet retry-endpoint {
 
     # ------------------------------------------------------------
     # Named sets

@@ -1,6 +1,6 @@
 [Unit]
 Description=Bitcoin Retry Endpoint
-Documentation=https://github.com/lightwebinc/bitcoin-retry-endpoint
+Documentation=https://github.com/lightwebinc/retry-endpoint
 After=network-online.target
 Wants=network-online.target
 
@@ -8,8 +8,8 @@ Wants=network-online.target
 Type=simple
 User={{ retry_user }}
 Group={{ retry_group }}
-EnvironmentFile=/etc/bitcoin-retry-endpoint/config.env
-ExecStart={{ retry_bin_dir }}/bitcoin-retry-endpoint
+EnvironmentFile=/etc/retry-endpoint/config.env
+ExecStart={{ retry_bin_dir }}/retry-endpoint
 Restart=on-failure
 RestartSec=5
 TimeoutStopSec=30

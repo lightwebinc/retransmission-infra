@@ -24,7 +24,7 @@
 - name: Configure GRE (gif) tunnel in rc.conf (FreeBSD)
   ansible.builtin.blockinfile:
     path: /etc/rc.conf
-    marker: "# {mark} bitcoin-retry-endpoint GRE tunnel"
+    marker: "# {mark} retry-endpoint GRE tunnel"
     block: |
       {% set tun = (gre_outer_proto == 'ipv4')
                    | ternary(gre_local_ip4 ~ ' ' ~ gre_remote_ip4,

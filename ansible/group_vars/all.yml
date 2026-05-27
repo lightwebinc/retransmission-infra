@@ -1,18 +1,18 @@
 ---
 # ============================================================
-# bitcoin-retransmission Ansible group_vars/all.yml
+# retransmission-infra Ansible group_vars/all.yml
 # Override any variable per-host in inventory/hosts.yml
 # ============================================================
 
 # ------------------------------------------------------------
-# bitcoin-retry-endpoint source and build
+# retry-endpoint source and build
 # ------------------------------------------------------------
-retry_repo: "https://github.com/lightwebinc/bitcoin-retry-endpoint.git"
+retry_repo: "https://github.com/lightwebinc/retry-endpoint.git"
 retry_version: "main"
-retry_install_dir: "/opt/bitcoin-retry-endpoint"
+retry_install_dir: "/opt/retry-endpoint"
 retry_bin_dir: "/usr/local/bin"
-retry_user: "bitcoin-retry-endpoint"
-retry_group: "bitcoin-retry-endpoint"
+retry_user: "retry-endpoint"
+retry_group: "retry-endpoint"
 
 # Go toolchain version (used when building from source)
 go_version: "1.25.10"

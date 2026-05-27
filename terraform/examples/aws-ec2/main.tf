@@ -93,7 +93,7 @@ resource "aws_route_table_association" "public" {
 # ---------------------------------------------------------------
 resource "aws_security_group" "retry_endpoint_node" {
   name        = "${var.name_prefix}-retry-endpoint-node"
-  description = "bitcoin-retry-endpoint node"
+  description = "retry-endpoint node"
   vpc_id      = aws_vpc.main.id
 
   tags = merge(local.common_tags, { Name = "${var.name_prefix}-sg" })
@@ -207,7 +207,7 @@ resource "aws_eip_association" "retry_endpoint_node" {
 
 locals {
   common_tags = {
-    Project     = "bitcoin-retry-endpoint"
+    Project     = "retry-endpoint"
     ManagedBy   = "terraform"
     Environment = var.environment
   }

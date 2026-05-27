@@ -3,20 +3,20 @@
 ## Service management
 
 ```sh
-service bitcoin_retry_endpoint status
-service bitcoin_retry_endpoint restart
-tail -f /var/log/bitcoin_retry_endpoint.log
+service retry_endpoint status
+service retry_endpoint restart
+tail -f /var/log/retry_endpoint.log
 ```
 
-rc.d script: `/usr/local/etc/rc.d/bitcoin_retry_endpoint`
-(see template `ansible/roles/bitcoin-retry-endpoint/templates/bitcoin_retry_endpoint.rc.j2`).
+rc.d script: `/usr/local/etc/rc.d/retry_endpoint`
+(see template `ansible/roles/retry-endpoint/templates/retry_endpoint.rc.j2`).
 
-Environment file: `/usr/local/etc/bitcoin-retry-endpoint.conf`.
+Environment file: `/usr/local/etc/retry-endpoint.conf`.
 
 Enable at boot:
 
 ```sh
-sysrc bitcoin_retry_endpoint_enable=YES
+sysrc retry_endpoint_enable=YES
 ```
 
 ## Network configuration
@@ -36,7 +36,7 @@ service routing restart
 
 ## Firewall (pf)
 
-Anchor file: `/etc/pf.d/bitcoin-retry-endpoint.conf`, loaded from `/etc/pf.conf`
+Anchor file: `/etc/pf.d/retry-endpoint.conf`, loaded from `/etc/pf.conf`
 via an include line.
 
 ```sh

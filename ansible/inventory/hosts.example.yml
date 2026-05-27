@@ -1,5 +1,5 @@
 ---
-# Example inventory for bitcoin-retransmission
+# Example inventory for retransmission-infra
 # Copy to hosts.yml and customize for your deployment
 
 retry_endpoint_nodes:

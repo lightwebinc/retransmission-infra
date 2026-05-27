@@ -194,9 +194,9 @@ variable "redis_addr" {
 }
 
 variable "retry_repo" {
-  description = "Git URL of the bitcoin-retry-endpoint repository"
+  description = "Git URL of the retry-endpoint repository"
   type        = string
-  default     = "https://github.com/lightwebinc/bitcoin-retry-endpoint.git"
+  default     = "https://github.com/lightwebinc/retry-endpoint.git"
 }
 
 variable "retry_version" {

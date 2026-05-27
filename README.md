@@ -1,14 +1,14 @@
-# bitcoin-retransmission
+# retransmission-infra
 
-[![Lint](https://github.com/lightwebinc/bitcoin-retransmission/actions/workflows/lint.yml/badge.svg)](https://github.com/lightwebinc/bitcoin-retransmission/actions/workflows/lint.yml)
+[![Lint](https://github.com/lightwebinc/retransmission-infra/actions/workflows/lint.yml/badge.svg)](https://github.com/lightwebinc/retransmission-infra/actions/workflows/lint.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 Ansible and Terraform automation for deploying
-[`bitcoin-retry-endpoint`](https://github.com/lightwebinc/bitcoin-retry-endpoint)
+[`retry-endpoint`](https://github.com/lightwebinc/retry-endpoint)
 nodes — the NACK-based retransmission cache in the BSV multicast pipeline.
 
 ```text
-bitcoin-shard-listener ──NACK──▶  bitcoin-retry-endpoint  ──retransmit──▶  FF05::<shard>:9001
+bitcoin-shard-listener ──NACK──▶  retry-endpoint  ──retransmit──▶  FF05::<shard>:9001
                                   (this repo deploys)
 ```
 

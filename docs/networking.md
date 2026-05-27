@@ -64,13 +64,13 @@ The `networking` role installs this route via:
 ## Netplan (Ubuntu 24.04)
 
 When `ingress_mode=ethernet`, the `networking` role deploys a netplan config at
-`/etc/netplan/60-bitcoin-retry-endpoint.yaml`. This config:
+`/etc/netplan/60-retry-endpoint.yaml`. This config:
 
 - Enables IPv6 RA acceptance on `ingress_iface`
 - (Optional) Configures GRE tunnel when `ingress_mode=gre`
 
 When `ingress_mode=gre`, a second netplan file
-`/etc/netplan/61-bitcoin-retry-endpoint-gre.yaml` configures the tunnel.
+`/etc/netplan/61-retry-endpoint-gre.yaml` configures the tunnel.
 
 ## rc.conf (FreeBSD 14)
 

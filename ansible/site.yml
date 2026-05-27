@@ -11,7 +11,7 @@
     - role: redis
       tags: [redis]
 
-- name: Deploy bitcoin-retry-endpoint nodes
+- name: Deploy retry-endpoint nodes
   hosts: retry_endpoint_nodes
   become: true
   gather_facts: true
@@ -20,7 +20,7 @@
     - role: common
       tags: [common]
 
-    - role: bitcoin-retry-endpoint
+    - role: retry-endpoint
       tags: [retry_endpoint]
 
     - role: networking

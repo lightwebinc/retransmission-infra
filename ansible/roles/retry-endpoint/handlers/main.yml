@@ -4,7 +4,7 @@
     daemon_reload: true
   when: ansible_os_family != 'FreeBSD'
 
-- name: Restart bitcoin-retry-endpoint
+- name: Restart retry-endpoint
   ansible.builtin.service:
-    name: "{{ 'bitcoin-retry-endpoint' if ansible_os_family != 'FreeBSD' else 'bitcoin_retry_endpoint' }}"
+    name: "{{ 'retry-endpoint' if ansible_os_family != 'FreeBSD' else 'retry_endpoint' }}"
     state: restarted

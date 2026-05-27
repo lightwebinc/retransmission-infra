@@ -7,10 +7,10 @@
     group: root
     mode: "0755"
 
-- name: Deploy nftables ruleset for bitcoin-retry-endpoint
+- name: Deploy nftables ruleset for retry-endpoint
   ansible.builtin.template:
-    src: bitcoin-retry-endpoint.nft.j2
-    dest: /etc/nftables.d/60-bitcoin-retry-endpoint.nft
+    src: retry-endpoint.nft.j2
+    dest: /etc/nftables.d/60-retry-endpoint.nft
     owner: root
     group: root
     mode: "0644"

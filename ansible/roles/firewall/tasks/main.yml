@@ -1,5 +1,5 @@
 ---
-# Simplified firewall for bitcoin-retry-endpoint (UDP-only, no BGP)
+# Simplified firewall for retry-endpoint (UDP-only, no BGP)
 #
 # Perimeter model:
 #   * Fabric interface ({{ firewall_fabric_iface }}): NACK receive + retransmit

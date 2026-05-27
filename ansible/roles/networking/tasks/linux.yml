@@ -6,7 +6,7 @@
     name: "{{ item.name }}"
     value: "{{ item.value }}"
     state: present
-    sysctl_file: /etc/sysctl.d/60-bitcoin-retry-endpoint.conf
+    sysctl_file: /etc/sysctl.d/60-retry-endpoint.conf
     reload: true
   loop:
     - { name: net.ipv6.conf.all.accept_ra, value: "1" }
@@ -15,7 +15,7 @@
 - name: Deploy netplan config for ethernet ingress
   ansible.builtin.template:
     src: netplan-ethernet.yaml.j2
-    dest: /etc/netplan/60-bitcoin-retry-endpoint.yaml
+    dest: /etc/netplan/60-retry-endpoint.yaml
     owner: root
     group: root
     mode: "0600"
@@ -27,7 +27,7 @@
 - name: Deploy netplan config for GRE6 tunnel ingress
   ansible.builtin.template:
     src: netplan-gre.yaml.j2
-    dest: /etc/netplan/61-bitcoin-retry-endpoint-gre.yaml
+    dest: /etc/netplan/61-retry-endpoint-gre.yaml
     owner: root
     group: root
     mode: "0600"

@@ -124,7 +124,7 @@ variable "mgmt_cidrs_v6" {
 variable "name_prefix" {
   description = "Prefix for all resource names"
   type        = string
-  default     = "bitcoin-retry-endpoint"
+  default     = "retry-endpoint"
 }
 
 variable "shard_bits" {

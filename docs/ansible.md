@@ -10,7 +10,7 @@ ansible/
   inventory/hosts.example.yml
   roles/
     common/                 Base OS deps + Go toolchain
-    bitcoin-retry-endpoint/ Build + systemd / rc.d unit + config
+    retry-endpoint/ Build + systemd / rc.d unit + config
     networking/             Interface / multicast route / GRE config
     firewall/               nftables (Linux) / pf (FreeBSD) perimeter (simplified)
 ```
@@ -30,7 +30,7 @@ ansible-playbook -i inventory/hosts.yml site.yml
 `site.yml` runs roles in this order:
 
 1. `common` — install packages, Go toolchain
-2. `bitcoin-retry-endpoint` — build binary, install service
+2. `retry-endpoint` — build binary, install service
 3. `networking` — configure `mc_iface`, GRE, multicast route
 4. `firewall` *(when `enable_firewall: true`)* — lock down the perimeter
 

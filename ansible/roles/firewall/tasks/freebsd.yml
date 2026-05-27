@@ -1,18 +1,18 @@
 ---
-- name: Deploy pf ruleset for bitcoin-retry-endpoint
+- name: Deploy pf ruleset for retry-endpoint
   ansible.builtin.template:
-    src: bitcoin-retry-endpoint.pf.conf.j2
-    dest: /etc/pf.d/bitcoin-retry-endpoint.conf
+    src: retry-endpoint.pf.conf.j2
+    dest: /etc/pf.d/retry-endpoint.conf
     owner: root
     group: wheel
     mode: "0600"
   notify: Reload pf
 
-- name: Include bitcoin-retry-endpoint rules in main pf.conf
+- name: Include retry-endpoint rules in main pf.conf
   ansible.builtin.lineinfile:
     path: /etc/pf.conf
-    regexp: '^include "/etc/pf.d/bitcoin-retry-endpoint.conf"'
-    line: 'include "/etc/pf.d/bitcoin-retry-endpoint.conf"'
+    regexp: '^include "/etc/pf.d/retry-endpoint.conf"'
+    line: 'include "/etc/pf.d/retry-endpoint.conf"'
     create: true
     mode: "0600"
   notify: Reload pf

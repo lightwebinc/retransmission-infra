@@ -3,22 +3,22 @@
 ## Service management
 
 ```sh
-systemctl status bitcoin-retry-endpoint
-systemctl restart bitcoin-retry-endpoint
-journalctl -u bitcoin-retry-endpoint -f
+systemctl status retry-endpoint
+systemctl restart retry-endpoint
+journalctl -u retry-endpoint -f
 ```
 
-Unit file: `/etc/systemd/system/bitcoin-retry-endpoint.service`
-(see template `ansible/roles/bitcoin-retry-endpoint/templates/bitcoin-retry-endpoint.service.j2`).
+Unit file: `/etc/systemd/system/retry-endpoint.service`
+(see template `ansible/roles/retry-endpoint/templates/retry-endpoint.service.j2`).
 
-Environment file: `/etc/bitcoin-retry-endpoint/config.env`.
+Environment file: `/etc/retry-endpoint/config.env`.
 
 ## Network configuration
 
 Netplan:
 
-- `/etc/netplan/60-bitcoin-retry-endpoint.yaml` — ingress ethernet
-- `/etc/netplan/61-bitcoin-retry-endpoint-gre.yaml` — GRE6 tunnel (when
+- `/etc/netplan/60-retry-endpoint.yaml` — ingress ethernet
+- `/etc/netplan/61-retry-endpoint-gre.yaml` — GRE6 tunnel (when
   `ingress_mode: gre`)
 
 Apply:
@@ -27,15 +27,15 @@ Apply:
 netplan apply
 ```
 
-Sysctl: `/etc/sysctl.d/60-bitcoin-retry-endpoint.conf`.
+Sysctl: `/etc/sysctl.d/60-retry-endpoint.conf`.
 
 ## Firewall
 
-nftables ruleset: `/etc/nftables.d/bitcoin-retry-endpoint.nft` (included from
+nftables ruleset: `/etc/nftables.d/retry-endpoint.nft` (included from
 `/etc/nftables.conf`).
 
 ```sh
-nft list table inet bitcoin-retry-endpoint
+nft list table inet retry-endpoint
 systemctl status nftables
 ```
 

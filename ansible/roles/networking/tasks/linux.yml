@@ -11,6 +11,13 @@
   loop:
     - { name: net.ipv6.conf.all.accept_ra, value: "1" }
     - { name: "net.ipv6.conf.{{ networking_ingress_iface }}.accept_ra", value: "1" }
+    # MLDv2 + raised mld_max_msf: required when retry-endpoint runs in
+    # sourceMode=ssm (consumes the manifest source-set for data-plane
+    # (S,G) joins). Default 64 sources/socket is below production
+    # publisher count; raise via networking_mld_max_msf (default 1024
+    # ≈ 2× expected fleet). See bsv-multicast SSM Support Plan.
+    - { name: net.ipv6.conf.all.force_mld_version, value: "2" }
+    - { name: net.ipv6.mld_max_msf, value: "{{ networking_mld_max_msf | default('1024') }}" }
 
 - name: Deploy netplan config for ethernet ingress
   ansible.builtin.template:

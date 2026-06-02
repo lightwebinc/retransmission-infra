@@ -20,6 +20,9 @@
     - role: common
       tags: [common]
 
+    - role: perf-tuning
+      tags: [perf-tuning]
+
     - role: retry-endpoint
       tags: [retry_endpoint]
 

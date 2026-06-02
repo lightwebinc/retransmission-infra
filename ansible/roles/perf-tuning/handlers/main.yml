@@ -1,0 +1,5 @@
+---
+- name: Reapply link settings
+  ansible.builtin.command:
+    cmd: "udevadm trigger --action=add --subsystem-match=net"
+  changed_when: true

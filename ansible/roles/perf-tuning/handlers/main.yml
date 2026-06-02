@@ -3,3 +3,14 @@
   ansible.builtin.command:
     cmd: "udevadm trigger --action=add --subsystem-match=net"
   changed_when: true
+
+- name: Update grub
+  ansible.builtin.command:
+    cmd: update-grub
+  changed_when: true
+
+- name: Warn perf-tuning reboot
+  ansible.builtin.debug:
+    msg: >-
+      GRUB cmdline updated with intel_idle.max_cstate=1
+      processor.max_cstate=1. Reboot required to take effect.

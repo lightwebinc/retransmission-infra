@@ -84,9 +84,19 @@ ansible-playbook site.yml --tags retry_endpoint
 # Update firewall after changing mgmt CIDRs
 ansible-playbook site.yml --tags firewall
 
+# Apply high-PPS host tuning (UDP buffers, busy-poll, C-states, irqbalance)
+ansible-playbook site.yml --tags perf-tuning
+
 # Target one host
 ansible-playbook site.yml -l retry-endpoint-01
 ```
+
+The `perf-tuning` role (run before `retry-endpoint`) applies the same
+host-level network/CPU tunings as `ingress-infra`. Knobs live in
+`roles/perf-tuning/defaults/main.yml`; see
+[ingress-infra ansible.md](https://github.com/lightwebinc/ingress-infra/blob/main/docs/ansible.md#perf-tuning-role)
+for the variable reference and `multicast-skills/performance-testing.md`
+for the methodology.
 
 ## Known issues (inherited from `ingress-infra` / `listener-infra`)
 

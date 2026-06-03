@@ -1,0 +1,47 @@
+# Aerospike Community Edition — managed by retransmission-infra (aerospike role).
+# Single-node reference config sized for the retry-endpoint frame cache.
+
+service {
+        proto-fd-max 15000
+}
+
+logging {
+        file /var/log/aerospike/aerospike.log {
+                context any info
+        }
+}
+
+network {
+        service {
+                address {{ aerospike_bind_addr }}
+                port 3000
+        }
+
+        heartbeat {
+                mode multicast
+                multicast-group 239.1.99.222
+                port 9918
+                interval 150
+                timeout 10
+        }
+
+        fabric {
+                port 3001
+        }
+
+        info {
+                port 3003
+        }
+}
+
+# Frame-cache namespace. default-ttl 0 means "use the client-supplied TTL"
+# (the retry-endpoint always sets one); never set a non-zero default-ttl here
+# or it would override per-frame expirations.
+namespace {{ aerospike_namespace }} {
+        replication-factor 1
+        default-ttl {{ aerospike_default_ttl }}
+
+        storage-engine memory {
+                data-size {{ aerospike_memory_gb }}G
+        }
+}

@@ -1,0 +1,10 @@
+---
+# Aerospike Community Edition provisioning (optional cache backend).
+# Enable by adding hosts to the `aerospike_nodes` inventory group and setting
+# cache_backend: aerospike on the retry-endpoint nodes. CE has no XDR or
+# rack-awareness; use a Redis-compatible backend for multi-region.
+aerospike_bind_addr: "0.0.0.0"          # service bind; restrict via firewall
+aerospike_namespace: "cache"            # MUST match retry-endpoint AEROSPIKE_NAMESPACE
+aerospike_memory_gb: 2                  # in-memory index/data budget for the namespace
+aerospike_default_ttl: "0"              # 0 = use per-record TTL from the client (required)
+aerospike_deb_url: "https://download.aerospike.com/artifacts/aerospike-server-community/latest/aerospike-server-community_latest_amd64.deb"

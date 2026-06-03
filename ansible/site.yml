@@ -11,6 +11,18 @@
     - role: redis
       tags: [redis]
 
+- name: Deploy Aerospike CE cache node (optional; for cache_backend=aerospike)
+  hosts: aerospike_nodes
+  become: true
+  gather_facts: true
+
+  roles:
+    - role: common
+      tags: [common]
+
+    - role: aerospike
+      tags: [aerospike]
+
 - name: Deploy retry-endpoint nodes
   hosts: retry_endpoint_nodes
   become: true

@@ -1,0 +1,35 @@
+---
+# Provisions an Aerospike Community Edition single node with a namespace sized
+# for the retry-endpoint frame cache. CE is the optional alternative to Redis
+# for large fleets (auto-sharded, hybrid RAM/SSD). For a real cluster, run this
+# role across several aerospike_nodes and seed the client with all of them.
+#
+# Note: TTL is whole-seconds in Aerospike (floor 1s); the retry-endpoint client
+# rounds up. aerospike_default_ttl MUST stay 0 so per-record (client-supplied)
+# TTLs are honoured.
+
+- name: Download Aerospike CE package
+  ansible.builtin.get_url:
+    url: "{{ aerospike_deb_url }}"
+    dest: /tmp/aerospike-server-community.deb
+    mode: "0644"
+
+- name: Install Aerospike CE
+  ansible.builtin.apt:
+    deb: /tmp/aerospike-server-community.deb
+    state: present
+
+- name: Render aerospike.conf
+  ansible.builtin.template:
+    src: aerospike.conf.j2
+    dest: /etc/aerospike/aerospike.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Aerospike
+
+- name: Enable and start aerospike
+  ansible.builtin.systemd:
+    name: aerospike
+    enabled: true
+    state: started

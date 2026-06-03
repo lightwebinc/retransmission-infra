@@ -33,9 +33,15 @@ shard_bits: 2
 mc_scope: "site"              # link | site | org | global
 mc_group_id: "0x000B"              # IANA group-id (default 0x000B = IANA Bitcoin)
 
-# Cache configuration
-cache_backend: "memory"        # memory | redis
-redis_addr: ""                # Redis address (if cache_backend=redis; also enables dedup when cache_backend=memory)
+# Cache configuration (modular shard-common/cache backend)
+# See bsv-multicast/docs/ModularCacheBackend/modular-cache-backend.md
+cache_backend: "memory"        # memory | redis | aerospike
+redis_addr: ""                # Redis/Valkey/Dragonfly address (if cache_backend=redis; also enables dedup when cache_backend=memory)
+aerospike_hosts: ""           # comma-separated host:port (required when cache_backend=aerospike); empty leaves Aerospike env unset
+aerospike_namespace: "cache"  # Aerospike namespace (must be provisioned; see aerospike role / docs/networking.md)
+aerospike_set: "bre"          # Aerospike set
+cache_dial_timeout: "1s"      # Backend dial timeout
+cache_op_timeout: "1s"        # Backend per-op timeout (fail-open on exceed; Aerospike TTL floor is 1s)
 cache_ttl: "60s"              # Global fallback TTL; collapses all per-FrameVer TTLs when explicitly overridden
 cache_ttl_tx: "60s"           # FrameVer V2 (BRC-124/128 regular tx) cache TTL
 cache_ttl_block: "10m"        # FrameVer V4 (BRC-131 block control) cache TTL

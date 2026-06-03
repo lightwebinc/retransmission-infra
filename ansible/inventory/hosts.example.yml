@@ -9,3 +9,14 @@ retry_endpoint_nodes:
       ingress_iface: eth0
       mgmt_cidrs_v4:
         - 10.0.0.0/8
+
+# Optional cache backend nodes. Populate only the group matching
+# cache_backend. Leave both out to run the in-process memory backend.
+# redis_nodes:
+#   hosts:
+#     redis-1:
+#       ansible_host: 10.0.3.20
+# aerospike_nodes:        # for cache_backend=aerospike
+#   hosts:
+#     aerospike-1:
+#       ansible_host: 10.0.3.30

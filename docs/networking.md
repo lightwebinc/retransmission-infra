@@ -82,3 +82,25 @@ The `networking` role manages FreeBSD networking via `/etc/rc.conf`:
 - Adds persistent multicast route
 
 Changes are applied via `service netif restart`.
+
+## Cache backend connectivity
+
+The frame cache backend (`cache_backend`) is an out-of-band TCP service on the
+**management network**, not the multicast fabric. Open the relevant ports from
+the retry-endpoint nodes to the backend nodes:
+
+| Backend | Ports (TCP) | Notes |
+|---------|-------------|-------|
+| `redis` | 6379 | Redis/Valkey/Dragonfly client port |
+| `aerospike` | 3000 (service), 3001 (fabric), 3003 (info) | client → 3000; 3001/3003 between Aerospike nodes |
+
+The optional `aerospike` role provisions a Community Edition node with a
+namespace matching `aerospike_namespace`. A multi-node Aerospike cluster also
+uses a **mesh or multicast heartbeat** (default multicast `239.1.99.222:9918`
+in the role's `aerospike.conf.j2`) on the node interconnect — keep it on the
+management segment, away from the BSV multicast groups. Aerospike TTL is
+whole-seconds (floor 1s); the retry-endpoint rounds up, and the namespace's
+`default-ttl` MUST stay `0` so client-supplied per-frame TTLs are honoured.
+
+Backend outages fail open: the retry endpoint treats cache errors as misses and
+keeps serving, so a backend restart never blocks NACK handling.

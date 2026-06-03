@@ -78,6 +78,10 @@ num_workers: 0               # 0 = runtime.NumCPU()
 metrics_addr: ":9400"         # Metrics endpoint
 otlp_endpoint: ""             # OTLP gRPC push; empty disables
 otlp_interval: "30s"          # OTLP metric export cadence
+# Unified logging — see bsv-multicast/docs/UnifiedLogging/unified-logging-plan.md
+log_format: "json"            # text | json (json for fleet aggregation)
+log_level: "info"             # debug|info|warn|error; runtime-togglable via POST /loglevel + SIGHUP
+trace_sampling: 0             # 0..1 trace head sampling (0 = off; exports via otlp_endpoint)
 drain_timeout: "0s"           # Pre-shutdown drain
 instance_id: ""               # OTel service.instance.id; empty = hostname
 retry_debug: false

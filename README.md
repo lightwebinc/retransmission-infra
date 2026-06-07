@@ -3,6 +3,8 @@
 [![Lint](https://github.com/lightwebinc/retransmission-infra/actions/workflows/lint.yml/badge.svg)](https://github.com/lightwebinc/retransmission-infra/actions/workflows/lint.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
+> Part of the [**BSV Layered Multicast**](https://github.com/lightwebinc/bsv-multicast) open-source project — see the main repository for the full architecture, design docs, and BRC specifications.
+
 Ansible and Terraform automation for deploying
 [`retry-endpoint`](https://github.com/lightwebinc/retry-endpoint)
 nodes — the NACK-based retransmission cache in the BSV multicast pipeline.

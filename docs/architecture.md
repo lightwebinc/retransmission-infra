@@ -30,7 +30,7 @@ tiers, and beacon discovery are documented in the service and project repos:
 - [retry-endpoint — Architecture](https://github.com/lightwebinc/retry-endpoint/blob/main/docs/architecture.md)
 - [retry-endpoint — Configuration](https://github.com/lightwebinc/retry-endpoint/blob/main/docs/configuration.md)
 - [bsv-multicast — DESIGN.md](https://github.com/lightwebinc/bsv-multicast/blob/main/DESIGN.md)
-- BRC drafts: `bsv-multicast/docs/brc-{124,126,127,128,129,130,131,132,133,134,135}-*.md`
+- BRC drafts: `bsv-multicast/docs/brc-{124,126,127,128,129,130,131,132,133,134,135,139}-*.md`
 
 ## Data plane
 
@@ -46,11 +46,12 @@ tiers, and beacon discovery are documented in the service and project repos:
 
 ## Cache backends
 
-| `CACHE_BACKEND` | `REDIS_ADDR`   | Frame cache              | Dedup        | Use case                                       |
-| --------------- | -------------- | ------------------------ | ------------ | ---------------------------------------------- |
-| `memory`        | empty          | freecache (per-instance) | none         | Single-node; default                           |
-| `memory`        | set            | freecache (per-instance) | Redis SET NX | Multi-node; per-instance frames + shared dedup |
-| `redis`         | set (required) | Redis (shared)           | Redis SET NX | Multi-node; fully shared cache + dedup         |
+| `CACHE_BACKEND` | `REDIS_ADDR`          | Frame cache                          | Dedup                 | Use case                                       |
+| --------------- | --------------------- | ------------------------------------ | --------------------- | ---------------------------------------------- |
+| `memory`        | empty                 | striped in-memory map (per-instance) | none                  | Single-node; default                           |
+| `memory`        | set                   | striped in-memory map (per-instance) | Redis SET NX          | Multi-node; per-instance frames + shared dedup |
+| `redis`         | set (required)        | Redis (shared)                       | Redis SET NX          | Multi-node; fully shared cache + dedup         |
+| `aerospike`     | `AEROSPIKE_HOSTS` set | Aerospike (shared)                   | Aerospike CREATE_ONLY | Largest fleets; auto-sharded hybrid RAM/SSD    |
 
 The `memory` + `REDIS_ADDR` mode (row 2) is used in the LXD lab:
 retry1/2/3 each maintain their own frame cache (preserving MISS-escalation

@@ -59,6 +59,7 @@ rl_sequence_max: 100          # Max requests per LookupSeq per sliding window
 rl_sequence_window: "1m"      # Per-LookupSeq sliding window
 rl_group_rate: 200            # Retransmits per second per (srcIP, groupIdx)
 rl_group_burst: 50            # Burst size per (srcIP, groupIdx)
+rl_throttle_response: false   # Emit THROTTLED hint on seq/chain throttle (IP flood tier stays silent)
 
 # Beacon configuration (BRC-126 endpoint discovery)
 nack_addr: ""                 # Explicit IPv6 for NACK bind + ADVERT; empty = auto-detect

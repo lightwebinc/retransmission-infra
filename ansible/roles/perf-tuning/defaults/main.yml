@@ -2,8 +2,7 @@
 # perf-tuning role defaults.
 #
 # Live tunings measured to gain +7.3% on the 256 B Bitcoin P2PKH hot path
-# on Intel i7-8700K + Mellanox ConnectX-4 Lx (see multicast-skills/
-# performance-testing.md for the methodology).
+# on Intel i7-8700K + Mellanox ConnectX-4 Lx.
 
 # Whether to apply the perf-tuning role at all. Off by default in case an
 # operator wants stock OS behaviour.

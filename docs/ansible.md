@@ -95,8 +95,7 @@ The `perf-tuning` role (run before `retry-endpoint`) applies the same
 host-level network/CPU tunings as `ingress-infra`. Knobs live in
 `roles/perf-tuning/defaults/main.yml`; see
 [ingress-infra ansible.md](https://github.com/lightwebinc/ingress-infra/blob/main/docs/ansible.md#perf-tuning-role)
-for the variable reference and `multicast-skills/performance-testing.md`
-for the methodology.
+for the variable reference.
 
 ## Known issues (inherited from `ingress-infra` / `listener-infra`)
 

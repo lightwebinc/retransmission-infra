@@ -33,10 +33,10 @@ variable "cache_ttl" {
   default     = "60s"
 }
 
-variable "cache_ttl_tx" {
-  description = "Cache TTL for FrameVer V2 (BRC-124/128 regular tx)"
+variable "cache_ttl_anchor" {
+  description = "Cache TTL for FrameVer V6 (BRC-134 anchor tx)"
   type        = string
-  default     = "60s"
+  default     = "2m"
 }
 
 variable "cache_ttl_block" {
@@ -51,10 +51,10 @@ variable "cache_ttl_subtree" {
   default     = "5m"
 }
 
-variable "cache_ttl_anchor" {
-  description = "Cache TTL for FrameVer V6 (BRC-134 anchor tx)"
+variable "cache_ttl_tx" {
+  description = "Cache TTL for FrameVer V2 (BRC-124/128 regular tx)"
   type        = string
-  default     = "2m"
+  default     = "60s"
 }
 
 variable "egress_iface" {

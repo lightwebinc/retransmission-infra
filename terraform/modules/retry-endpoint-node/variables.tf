@@ -1,3 +1,21 @@
+variable "aerospike_hosts" {
+  description = "Comma-separated Aerospike host:port list (required when cache_backend=aerospike)"
+  type        = string
+  default     = ""
+}
+
+variable "aerospike_namespace" {
+  description = "Aerospike namespace (must be provisioned on the cluster)"
+  type        = string
+  default     = "cache"
+}
+
+variable "aerospike_set" {
+  description = "Aerospike set name"
+  type        = string
+  default     = "bre"
+}
+
 variable "ansible_inventory_path" {
   description = "Path to write the generated Ansible inventory file"
   type        = string
@@ -11,13 +29,13 @@ variable "ansible_playbook_path" {
 }
 
 variable "cache_backend" {
-  description = "Cache backend: memory or redis"
+  description = "Cache backend: memory, redis, or aerospike"
   type        = string
   default     = "memory"
 
   validation {
-    condition     = contains(["memory", "redis"], var.cache_backend)
-    error_message = "cache_backend must be 'memory' or 'redis'."
+    condition     = contains(["aerospike", "memory", "redis"], var.cache_backend)
+    error_message = "cache_backend must be 'memory', 'redis', or 'aerospike'."
   }
 }
 
@@ -87,8 +105,31 @@ variable "gre_inner_ipv6" {
   default     = ""
 }
 
+variable "gre_local_ip4" {
+  description = "Local IPv4 address for the GRE tunnel endpoint (ingress_mode=gre, gre_outer_proto=ipv4)"
+  type        = string
+  default     = ""
+}
+
 variable "gre_local_ip6" {
   description = "Local IPv6 address for the ip6gre tunnel endpoint (ingress_mode=gre only)"
+  type        = string
+  default     = ""
+}
+
+variable "gre_outer_proto" {
+  description = "GRE outer transport: ipv6 (ip6gre) or ipv4 (gre). Inner is always IPv6."
+  type        = string
+  default     = "ipv6"
+
+  validation {
+    condition     = contains(["ipv4", "ipv6"], var.gre_outer_proto)
+    error_message = "gre_outer_proto must be one of: ipv4, ipv6."
+  }
+}
+
+variable "gre_remote_ip4" {
+  description = "Remote IPv4 address for the GRE tunnel endpoint (ingress_mode=gre, gre_outer_proto=ipv4)"
   type        = string
   default     = ""
 }
@@ -200,9 +241,9 @@ variable "retry_repo" {
 }
 
 variable "retry_version" {
-  description = "Git ref (branch, tag, or SHA) to check out"
+  description = "Git ref (branch, tag, or SHA) to check out; \"main\" for lab builds from tip"
   type        = string
-  default     = "main"
+  default     = "v1.5.0"
 }
 
 variable "rl_chain_rate" {

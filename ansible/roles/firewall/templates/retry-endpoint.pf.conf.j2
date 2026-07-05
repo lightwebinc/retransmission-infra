@@ -2,7 +2,7 @@
 # Managed by Ansible — do not edit manually
 #
 # Simplified perimeter model (UDP-only, no BGP):
-#   * Fabric interface ({{ firewall_fabric_iface }}): NACK receive + retransmit
+#   * Fabric interface ({{ firewall_fabric_iface }}): frame + NACK receive, retransmit egress
 #   * Non-fabric interfaces: management only
 #   * Forwarding: disabled
 
@@ -31,10 +31,6 @@ block all
 
 # Allow loopback
 set skip on lo0
-
-# Allow established connections
-pass out quick keep state
-pass in quick keep state
 
 # Allow ICMPv6
 pass in proto ipv6-icmp all
@@ -70,5 +66,5 @@ pass out on ! $fabric_iface inet6 proto tcp to {{ cidr }} port { 22, $metrics_po
 pass out on ! $fabric_iface inet proto udp to any port { 53, 123 }
 pass out on ! $fabric_iface inet proto tcp to any port { 53, 80, 443 }
 
-# Block forwarding
-block forward all
+# Forwarding is disabled via sysctl (net.inet6.ip6.forwarding=0);
+# pf has no forward direction — the default "block all" covers routed traffic.

@@ -8,14 +8,14 @@
 # retry-endpoint source and build
 # ------------------------------------------------------------
 retry_repo: "https://github.com/lightwebinc/retry-endpoint.git"
-retry_version: "main"
+retry_version: "v1.5.0"       # release tag; override with "main" for lab builds from tip
 retry_install_dir: "/opt/retry-endpoint"
 retry_bin_dir: "/usr/local/bin"
 retry_user: "retry-endpoint"
 retry_group: "retry-endpoint"
 
 # Go toolchain version (used when building from source)
-go_version: "1.25.10"
+go_version: "1.25.11"
 go_install_dir: "/usr/local/go"
 
 # ------------------------------------------------------------
@@ -34,7 +34,7 @@ mc_scope: "site"              # link | site | org | global
 mc_group_id: "0x000B"              # IANA group-id (default 0x000B = IANA Bitcoin)
 
 # Cache configuration (modular shard-common/cache backend)
-# See bsv-multicast/docs/ModularCacheBackend/modular-cache-backend.md
+# See https://github.com/lightwebinc/shard-common/blob/main/docs/cache-backend.md
 cache_backend: "memory"        # memory | redis | aerospike
 redis_addr: ""                # Redis/Valkey/Dragonfly address (if cache_backend=redis; also enables dedup when cache_backend=memory)
 aerospike_hosts: ""           # comma-separated host:port (required when cache_backend=aerospike); empty leaves Aerospike env unset
@@ -59,7 +59,7 @@ rl_sequence_max: 100          # Max requests per LookupSeq per sliding window
 rl_sequence_window: "1m"      # Per-LookupSeq sliding window
 rl_group_rate: 200            # Retransmits per second per (srcIP, groupIdx)
 rl_group_burst: 50            # Burst size per (srcIP, groupIdx)
-rl_throttle_response: false   # Emit THROTTLED hint on seq/chain throttle (IP flood tier stays silent)
+rl_throttle_response: false   # Emit THROTTLED hint on seq/chain/group throttle (IP flood tier stays silent)
 
 # Beacon configuration (BRC-126 endpoint discovery)
 nack_addr: ""                 # Explicit IPv6 for NACK bind + ADVERT; empty = auto-detect
@@ -79,7 +79,7 @@ num_workers: 0               # 0 = runtime.NumCPU()
 metrics_addr: ":9400"         # Metrics endpoint
 otlp_endpoint: ""             # OTLP gRPC push; empty disables
 otlp_interval: "30s"          # OTLP metric export cadence
-# Unified logging — see bsv-multicast/docs/UnifiedLogging/unified-logging-plan.md
+# Unified logging — see https://github.com/lightwebinc/shard-common/blob/main/docs/logging.md
 log_format: "json"            # text | json (json for fleet aggregation)
 log_level: "info"             # debug|info|warn|error; runtime-togglable via POST /loglevel + SIGHUP
 trace_sampling: 0             # 0..1 trace head sampling (0 = off; exports via otlp_endpoint)

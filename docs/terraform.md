@@ -58,8 +58,9 @@ Copy `examples/generic/` or `examples/aws-ec2/` and adapt:
 2. Collect the resulting host IPs into `local.node_ips` (or equivalent).
 3. Pass them to `module.retry_endpoint_nodes` (one instance per host).
 4. Ensure cloud-level firewall permits:
-   - UDP/`listen_port` (9300) from fabric sources
-   - UDP/`egress_port` (9100) outbound to fabric
+   - UDP/`listen_port` (9001, multicast frames) and UDP/`nack_port` (9300,
+     NACK) inbound from fabric sources
+   - UDP/`egress_port` (9001) and UDP/`nack_port` (9300) outbound to fabric
    - TCP/22 and TCP/9400 from `mgmt_cidrs_*`
    - Outbound per your organisation's policy
 
@@ -67,9 +68,9 @@ Copy `examples/generic/` or `examples/aws-ec2/` and adapt:
 
 | Variable | Default | Why |
 |-------------------|----------|-------------------------------------------------------------|
-| `listen_port` | `9300` | NACK receive port |
-| `nack_port` | `9301` | NACK send port to listeners |
-| `egress_port` | `9100` | Retransmission port to listeners |
+| `listen_port` | `9001` | Multicast frame receive (matches proxy/listener egress) |
+| `nack_port` | `9300` | NACK receive (listeners dial this) |
+| `egress_port` | `9001` | Retransmission multicast (matches listener ingress) |
 | `metrics_addr` | `:9400` | Avoid collision with listener (`:9200`) and proxy (`:9100`) |
 | `enable_firewall` | `true` | Default-on for security |
 | `otlp_interval` | `"30s"` | Preserves prior hardcoded value |

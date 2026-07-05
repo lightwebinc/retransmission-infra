@@ -4,15 +4,18 @@
 
 ```
 ansible/
-  site.yml                  Main playbook (retry_endpoint_nodes group)
+  site.yml                  Main playbook (redis_nodes, aerospike_nodes, retry_endpoint_nodes plays)
   requirements.yml          Collection dependencies (community.general, ansible.posix)
   group_vars/all.yml        Default variables for all retry-endpoint nodes
   inventory/hosts.example.yml
   roles/
     common/                 Base OS deps + Go toolchain
-    retry-endpoint/ Build + systemd / rc.d unit + config
+    perf-tuning/            High-PPS host tuning (UDP buffers, busy-poll, C-states)
+    retry-endpoint/         Build + systemd / rc.d unit + config
     networking/             Interface / multicast route / GRE config
     firewall/               nftables (Linux) / pf (FreeBSD) perimeter (simplified)
+    redis/                  Optional Redis cache node (redis_nodes group)
+    aerospike/              Optional Aerospike CE cache node (aerospike_nodes group)
 ```
 
 ## First run
@@ -27,14 +30,16 @@ ansible-playbook -i inventory/hosts.yml site.yml
 
 ## Role ordering
 
-`site.yml` runs roles in this order:
+`site.yml` runs roles in this order on `retry_endpoint_nodes`:
 
 1. `common` — install packages, Go toolchain
-2. `retry-endpoint` — build binary, install service
-3. `networking` — configure `mc_iface`, GRE, multicast route
-4. `firewall` *(when `enable_firewall: true`)* — lock down the perimeter
+2. `perf-tuning` *(when `perf_tuning_enabled: true`)* — host network/CPU tuning
+3. `retry-endpoint` — build binary, install service
+4. `networking` — configure `mc_iface`, GRE, multicast route
+5. `firewall` *(when `enable_firewall: true`)* — lock down the perimeter
 
-Firewall runs **after** networking so interface names resolve.
+Firewall runs **after** networking so interface names resolve. Optional
+`redis_nodes` and `aerospike_nodes` plays (cache-backend hosts) run first.
 
 ## Key variables
 
@@ -44,12 +49,15 @@ See `ansible/group_vars/all.yml` for the full list. Quick reference:
 |-------------------|------------|----------------------------------------------------|
 | `mc_iface` | `eth0` | **Must be set per-host** (group_vars precedence) |
 | `ingress_mode` | `ethernet` | Or `gre` |
-| `listen_port` | `9300` | NACK receive port |
-| `nack_port` | `9301` | NACK send port to listeners |
+| `listen_port` | `9001` | Multicast frame receive (matches proxy/listener egress) |
+| `nack_port` | `9300` | NACK receive (listeners dial this) |
 | `egress_iface` | `eth0` | Retransmission egress interface |
-| `egress_port` | `9100` | Retransmission port to listeners |
+| `egress_port` | `9001` | Retransmission multicast (matches listener ingress) |
 | `shard_bits` | `2` | Must match fabric |
-| `cache_backend` | `memory` | Or `redis` |
+| `retry_version` | `v1.5.0` | Git ref to build (tag, branch, or SHA) |
+| `retry_force_build` | `false` | Force a rebuild even if the binary exists |
+| `retry_local_binary` | `""` | Push a pre-built local binary (skips git/build) |
+| `cache_backend` | `memory` | Or `redis` / `aerospike` |
 | `redis_addr` | `""` | Redis address (if cache_backend=redis) |
 | `cache_ttl` | `60s` | Global fallback cache TTL; collapses per-FrameVer TTLs when explicitly set |
 | `cache_ttl_tx` | `60s` | FrameVer V2 (BRC-124/128 regular tx) cache TTL |
@@ -57,9 +65,11 @@ See `ansible/group_vars/all.yml` for the full list. Quick reference:
 | `cache_ttl_subtree` | `5m` | FrameVer V5 (BRC-132 subtree data) cache TTL |
 | `cache_ttl_anchor` | `2m` | FrameVer V6 (BRC-134 anchor tx) cache TTL |
 | `cache_max_keys` | `100000` | Maximum cache entries |
-| `rl_ip_rate` | `1000/s` | Per-IP rate limit |
-| `rl_sender_rate` | `10000/s` | Per-sender rate limit |
-| `rl_global_rate` | `100000/s` | Global rate limit |
+| `rl_ip_rate` | `1000/s` | Per-IP NACK rate limit |
+| `rl_chain_rate` | `500` | Max NACKs per window per (srcIP, chainID) |
+| `rl_sequence_max` | `100` | Max requests per LookupSeq per sliding window |
+| `rl_group_rate` | `200/s` | Retransmits per second per (srcIP, groupIdx) |
+| `rl_throttle_response` | `false` | Emit THROTTLED hint on seq/chain/group throttle |
 | `metrics_addr` | `:9400` |  |
 | `otlp_endpoint` | `""` |  |
 | `otlp_interval` | `30s` |  |
@@ -104,7 +114,9 @@ for the variable reference.
   role marks `retry_install_dir` as `safe.directory` before cloning.
 - Remember: `group_vars/all.yml` beats inventory-group vars. Always set
   `mc_iface` and `mgmt_cidrs_*` on the host, not on the group.
-- The binary build task runs on every playbook invocation (`changed_when: true`
-  with no `creates:` guard) to ensure the installed binary always reflects the
-  checked-out source. The `copy` step that follows only triggers a service
-  restart when the binary actually changes.
+- The binary build task is stat-guarded: it only compiles when the binary is
+  missing or `retry_force_build=true`, so a plain `git` update does **not**
+  trigger a rebuild. Set `retry_force_build=true` to rebuild from the
+  checked-out source, or `retry_local_binary=<path>` to push a pre-built
+  binary (skips git/build entirely). The `copy` step that follows only
+  triggers a service restart when the binary actually changes.

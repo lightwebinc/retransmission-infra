@@ -65,11 +65,15 @@ Go toolchain: `/usr/local/go` (via tarball download).
 # Multicast route
 netstat -rn -f inet6 | grep ff
 
-# Live NACK receive capture
-tcpdump -i vtnet0 -nn 'udp and ip6 multicast and port 9300'
+# Live multicast frame receive capture (listen_port)
+tcpdump -i vtnet0 -nn 'udp and ip6 multicast and port 9001'
 
-# Live re-multicast capture
-tcpdump -i vtnet0 -nn 'udp and ip6 multicast and port 9100'
+# Live NACK receive capture — NACKs are unicast to nack_port
+# (multicast on 9300 is beacon ADVERTs, not NACKs)
+tcpdump -i vtnet0 -nn 'udp and port 9300 and not ip6 multicast'
+
+# Live re-multicast capture (egress_port)
+tcpdump -i vtnet0 -nn 'udp and ip6 multicast and port 9001'
 ```
 
 ## Known issues

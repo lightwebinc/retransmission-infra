@@ -97,12 +97,6 @@ variable "key_name" {
   type        = string
 }
 
-variable "listen_port" {
-  description = "UDP port for NACK receive"
-  type        = number
-  default     = 9300
-}
-
 variable "mc_route_prefix" {
   description = "IPv6 multicast route prefix for the ingress interface (empty = auto-derive from mc_scope)"
   type        = string
@@ -119,6 +113,12 @@ variable "mgmt_cidrs_v6" {
   description = "IPv6 CIDRs for host-level firewall mgmt allow-list"
   type        = list(string)
   default     = []
+}
+
+variable "nack_port" {
+  description = "UDP port for NACK receive (listeners dial this)"
+  type        = number
+  default     = 9300
 }
 
 variable "name_prefix" {

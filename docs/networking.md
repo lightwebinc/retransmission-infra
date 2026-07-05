@@ -4,15 +4,15 @@
 
 ### Ethernet mode (default)
 
-The retry-endpoint receives NACK datagrams directly on a physical interface
-(`mc_iface`, default `eth0`). This is the simplest mode and works for most
-deployments.
+The retry-endpoint receives multicast frames and unicast NACK datagrams
+directly on a physical interface (`mc_iface`, default `eth0`). This is the
+simplest mode and works for most deployments.
 
 ```
 ┌─────────────────┐
 │ retry-endpoint  │
 │                 │
-│ eth0 (mc_iface)│ ← NACK multicast from listeners
+│ eth0 (mc_iface)│ ← multicast frames + beacons; unicast NACKs from listeners
 └─────────────────┘
 ```
 
@@ -27,7 +27,7 @@ the outer transport can be IPv6 (ip6gre) or IPv4 (gre).
 │ retry-endpoint  │
 │                 │
 │ eth0 (mgmt)     │ ← GRE outer transport
-│ gre6-retry      │ ← IPv6 multicast (NACK receive)
+│ gre6-retry      │ ← IPv6 multicast frames + unicast NACKs
 └─────────────────┘
 ```
 

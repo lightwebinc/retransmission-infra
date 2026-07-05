@@ -11,8 +11,8 @@ perf_tuning_enabled: true
 # /etc/sysctl.d settings. Reload-on-change handled by the role.
 perf_tuning_sysctls:
   # UDP socket buffers — bump well above the 4 MiB default so kernel UDP
-  # queue isn't the lid at high PPS. The proxy still asks for SO_RCVBUF
-  # via -recv-buf-bytes; this lifts the rmem_max cap.
+  # queue isn't the lid at high PPS. This lifts the rmem_max cap for the
+  # retry-endpoint's receive sockets.
   net.core.rmem_max: "268435456"        # 256 MiB
   net.core.rmem_default: "67108864"     #  64 MiB
   net.core.wmem_max: "268435456"
@@ -26,7 +26,7 @@ perf_tuning_sysctls:
 # Per-interface txqueuelen via systemd-networkd link drop-in. Skipped if
 # perf_tuning_iface is empty (e.g. on hosts where the egress NIC name is
 # inventory-derived rather than fixed).
-perf_tuning_iface: "{{ networking_egress_iface | default('') }}"
+perf_tuning_iface: "{{ egress_iface | default('') }}"
 perf_tuning_txqueuelen: 10000
 
 # Disable deep CPU C-states. Two layers:

@@ -4,7 +4,7 @@
 
 The retry-endpoint enforces a simplified perimeter (UDP-only, no BGP):
 
-- **Fabric interface** (`mc_iface`): NACK receive (inbound) + re-multicast (outbound)
+- **Fabric interface** (`mc_iface`): multicast frame + NACK receive (inbound), re-multicast (outbound)
 - **Non-fabric interfaces**: SSH + metrics (inbound from `mgmt_cidrs_*`)
 - **Forwarding**: disabled
 
@@ -19,14 +19,15 @@ Both must stay aligned.
 
 The `firewall` Ansible role deploys:
 
-- **Linux**: `/etc/nftables.d/retry-endpoint.nft`
+- **Linux**: `/etc/nftables.d/60-retry-endpoint.nft`
 - **FreeBSD**: `/etc/pf.d/retry-endpoint.conf`
 
 ### Input chain (inbound)
 
 Allowed on fabric interface (`mc_iface`):
 - ICMPv6 (NDP, MLD, diagnostics)
-- UDP/`listen_port` (9300) from ff00::/8 (NACK receive)
+- UDP/`listen_port` (9001) to ff00::/8 (multicast frame receive)
+- UDP/`nack_port` (9300) unicast (NACK receive)
 
 Allowed on non-fabric interfaces:
 - ICMPv4 (echo, dest-unreachable)
@@ -39,7 +40,9 @@ Allowed on non-fabric interfaces:
 
 Allowed from fabric interface:
 - ICMPv6 (NDP, MLD, diagnostics)
-- UDP/`egress_port` (9100) to fabric (re-multicast)
+- UDP/`egress_port` (9001) and UDP/`nack_port` (9300) to ff00::/8
+  (re-multicast + beacon ADVERT)
+- Unicast UDP from source port `nack_port` (9300) — ACK/MISS responses
 
 Allowed from non-fabric interfaces:
 - ICMPv4
@@ -65,7 +68,7 @@ vars. Always set `mgmt_cidrs_*` on each host, not on the group.
 The AWS EC2 example creates a security group with rules that mirror the
 host-level rules:
 
-- Inbound UDP/9300 from `fabric_source_cidrs_v6` (default `::/0` — tighten this)
+- Inbound UDP/9300 (NACK) from `fabric_source_cidrs_v6` (default `::/0` — tighten this)
 - Inbound TCP/22 from `ssh_allowed_cidrs`
 - Inbound TCP/9400 from `metrics_allowed_cidrs`
 - Outbound all (host-level nftables narrows further)

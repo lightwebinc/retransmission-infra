@@ -1,10 +1,12 @@
 # Trivy ignore file for the aws-ec2 example.
-# These findings are intentional design choices for a public Bitcoin ingress
-# proxy and are not appropriate to enforce on example/demo Terraform code.
+# These findings are intentional design choices for a retry-endpoint
+# (NACK retransmission cache) node and are not appropriate to enforce on
+# example/demo Terraform code.
 
 # Security groups open to 0.0.0.0/0 and ::/0
-# - BSV UDP ingress port must accept connections from any source (public proxy)
-# - BGP port open because the peer IP is not known at deploy time
+# - NACK UDP port must accept datagrams from fabric listeners; default ::/0
+#   until fabric_source_cidrs_v6 is tightened per deployment (no BGP here —
+#   retry endpoints are pure cache-and-retransmit services)
 # - All-egress rules are standard for outbound-unrestricted nodes
 AVD-AWS-0104
 

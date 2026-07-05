@@ -1,7 +1,8 @@
 ---
-# Retry-endpoint networking. Receives NACK via multicast and retransmits via unicast.
+# Retry-endpoint networking. Receives multicast frames + unicast NACKs;
+# retransmits via multicast. Forwarding stays disabled (see docs/security.md).
 
-- name: Enable IPv6 forwarding via sysctl
+- name: Set IPv6 RA + MLDv2 sysctls
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"

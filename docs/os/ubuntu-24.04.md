@@ -31,7 +31,7 @@ Sysctl: `/etc/sysctl.d/60-retry-endpoint.conf`.
 
 ## Firewall
 
-nftables ruleset: `/etc/nftables.d/retry-endpoint.nft` (included from
+nftables ruleset: `/etc/nftables.d/60-retry-endpoint.nft` (included from
 `/etc/nftables.conf`).
 
 ```sh
@@ -55,11 +55,15 @@ The Go toolchain is installed to `/usr/local/go` (version configured via
 # Multicast route
 ip -6 route show ff00::/16
 
-# Live NACK receive capture
-tcpdump -i eth0 -nn 'udp and ip6 multicast and port 9300'
+# Live multicast frame receive capture (listen_port)
+tcpdump -i eth0 -nn 'udp and ip6 multicast and port 9001'
 
-# Live re-multicast capture
-tcpdump -i eth0 -nn 'udp and ip6 multicast and port 9100'
+# Live NACK receive capture — NACKs are unicast to nack_port
+# (multicast on 9300 is beacon ADVERTs, not NACKs)
+tcpdump -i eth0 -nn 'udp and port 9300 and not ip6 multicast'
+
+# Live re-multicast capture (egress_port)
+tcpdump -i eth0 -nn 'udp and ip6 multicast and port 9001'
 
 # Sysctl state
 sysctl net.ipv6.conf.eth0.accept_ra

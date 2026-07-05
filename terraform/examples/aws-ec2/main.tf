@@ -105,8 +105,8 @@ resource "aws_vpc_security_group_ingress_rule" "nack_udp6" {
 
   security_group_id = aws_security_group.retry_endpoint_node.id
   description       = "NACK receive UDP (IPv6)"
-  from_port         = var.listen_port
-  to_port           = var.listen_port
+  from_port         = var.nack_port
+  to_port           = var.nack_port
   ip_protocol       = "udp"
   cidr_ipv6         = each.value
 }
@@ -234,9 +234,14 @@ module "retry_endpoint_nodes" {
   ingress_iface   = var.ingress_iface
   mc_route_prefix = var.mc_route_prefix
 
-  gre_remote_ip6 = var.gre_remote_ip6
-  gre_local_ip6  = local.node_ips[count.index]
-  gre_inner_ipv6 = ""
+  gre_inner_ipv6  = ""
+  gre_local_ip4   = var.gre_local_ip4 != "" ? var.gre_local_ip4 : aws_instance.retry_endpoint_node[count.index].private_ip
+  gre_local_ip6   = var.gre_local_ip6 != "" ? var.gre_local_ip6 : try(aws_instance.retry_endpoint_node[count.index].ipv6_addresses[0], "")
+  gre_outer_proto = var.gre_outer_proto
+  gre_remote_ip4  = var.gre_remote_ip4
+  gre_remote_ip6  = var.gre_remote_ip6
+
+  nack_port = var.nack_port
 
   enable_firewall = var.enable_firewall
   mgmt_cidrs_v4   = concat(var.ssh_allowed_cidrs, var.metrics_allowed_cidrs)

@@ -33,14 +33,17 @@ locals {
       mc_route_prefix = var.mc_route_prefix
 
       # Cache
-      cache_backend     = var.cache_backend
-      redis_addr        = var.redis_addr
-      cache_ttl         = var.cache_ttl
-      cache_ttl_tx      = var.cache_ttl_tx
-      cache_ttl_block   = var.cache_ttl_block
-      cache_ttl_subtree = var.cache_ttl_subtree
-      cache_ttl_anchor  = var.cache_ttl_anchor
-      cache_max_keys    = tostring(var.cache_max_keys)
+      cache_backend       = var.cache_backend
+      redis_addr          = var.redis_addr
+      aerospike_hosts     = var.aerospike_hosts
+      aerospike_namespace = var.aerospike_namespace
+      aerospike_set       = var.aerospike_set
+      cache_ttl           = var.cache_ttl
+      cache_ttl_tx        = var.cache_ttl_tx
+      cache_ttl_block     = var.cache_ttl_block
+      cache_ttl_subtree   = var.cache_ttl_subtree
+      cache_ttl_anchor    = var.cache_ttl_anchor
+      cache_max_keys      = tostring(var.cache_max_keys)
 
       # Rate limiting
       rl_ip_rate         = tostring(var.rl_ip_rate)
@@ -58,11 +61,14 @@ locals {
       otlp_interval = var.otlp_interval
 
       # Networking
-      ingress_mode   = var.ingress_mode
-      ingress_iface  = var.ingress_iface
-      gre_local_ip6  = var.gre_local_ip6
-      gre_remote_ip6 = var.gre_remote_ip6
-      gre_inner_ipv6 = var.gre_inner_ipv6
+      ingress_mode    = var.ingress_mode
+      ingress_iface   = var.ingress_iface
+      gre_outer_proto = var.gre_outer_proto
+      gre_local_ip4   = var.gre_local_ip4
+      gre_remote_ip4  = var.gre_remote_ip4
+      gre_local_ip6   = var.gre_local_ip6
+      gre_remote_ip6  = var.gre_remote_ip6
+      gre_inner_ipv6  = var.gre_inner_ipv6
 
       # Firewall
       enable_firewall = tostring(var.enable_firewall)

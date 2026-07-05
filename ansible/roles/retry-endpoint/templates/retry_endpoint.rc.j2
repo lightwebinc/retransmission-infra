@@ -35,22 +35,13 @@ status_cmd="retry_endpoint_status"
 
 retry_endpoint_prestart()
 {
-    # Load environment from config file
+    # Load + export environment from the config file. set -a auto-exports
+    # every variable, keeping this script in sync with config.env.j2.
     if [ -f "${retry_endpoint_config}" ]; then
+        set -a
         . "${retry_endpoint_config}"
+        set +a
     fi
-    export MULTICAST_IF LISTEN_PORT NACK_PORT
-    export EGRESS_IFACE EGRESS_PORT SHARD_BITS MC_SCOPE MC_GROUP_ID
-    export CACHE_BACKEND REDIS_ADDR CACHE_TTL CACHE_MAX_KEYS
-    export CACHE_TTL_TX CACHE_TTL_BLOCK CACHE_TTL_SUBTREE CACHE_TTL_ANCHOR
-    export RL_IP_RATE RL_IP_BURST RL_SENDER_RATE RL_SENDER_BURST
-    export RL_SENDER_WINDOW RL_SEQUENCE_MAX RL_SEQUENCE_WINDOW
-    export RL_GLOBAL_RATE RL_GLOBAL_BURST
-    export NUM_WORKERS METRICS_ADDR OTLP_ENDPOINT OTLP_INTERVAL
-    export DRAIN_TIMEOUT INSTANCE_ID DEBUG NACK_ADDR
-    export BEACON_ENABLED BEACON_TIER BEACON_PREFERENCE BEACON_INTERVAL
-    export BEACON_SCOPE BEACON_FLAGS_UNICAST BEACON_FLAGS_MULTICAST
-    export BEACON_FLAGS_DRAINING SUPPRESS_ACK SUPPRESS_MISS
 }
 
 retry_endpoint_start()

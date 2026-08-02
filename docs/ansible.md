@@ -54,7 +54,7 @@ See `ansible/group_vars/all.yml` for the full list. Quick reference:
 | `egress_iface` | `eth0` | Retransmission egress interface |
 | `egress_port` | `9001` | Retransmission multicast (matches listener ingress) |
 | `shard_bits` | `2` | Must match fabric |
-| `retry_version` | `v1.5.0` | Git ref to build (tag, branch, or SHA) |
+| `retry_version` | `v1.9.0` | Git ref to build (tag, branch, or SHA) |
 | `retry_force_build` | `false` | Force a rebuild even if the binary exists |
 | `retry_local_binary` | `""` | Push a pre-built local binary (skips git/build) |
 | `cache_backend` | `memory` | Or `redis` / `aerospike` |

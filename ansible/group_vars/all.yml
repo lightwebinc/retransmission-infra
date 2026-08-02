@@ -8,14 +8,14 @@
 # retry-endpoint source and build
 # ------------------------------------------------------------
 retry_repo: "https://github.com/lightwebinc/retry-endpoint.git"
-retry_version: "v1.5.0"       # release tag; override with "main" for lab builds from tip
+retry_version: "v1.9.0"       # release tag; override with "main" for lab builds from tip
 retry_install_dir: "/opt/retry-endpoint"
 retry_bin_dir: "/usr/local/bin"
 retry_user: "retry-endpoint"
 retry_group: "retry-endpoint"
 
 # Go toolchain version (used when building from source)
-go_version: "1.25.11"
+go_version: "1.25.12"
 go_install_dir: "/usr/local/go"
 
 # ------------------------------------------------------------

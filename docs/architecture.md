@@ -31,7 +31,7 @@ tiers, and beacon discovery are documented in the service and project repos:
 - [retry-endpoint — Architecture](https://github.com/lightwebinc/retry-endpoint/blob/main/docs/architecture.md)
 - [retry-endpoint — Configuration](https://github.com/lightwebinc/retry-endpoint/blob/main/docs/configuration.md)
 - [bsv-multicast — DESIGN.md](https://github.com/lightwebinc/bsv-multicast/blob/main/DESIGN.md)
-- BRC drafts: `bsv-multicast/docs/brc-{124,126,127,128,129,130,131,132,133,134,135,139,142}-*.md`
+- BRC specifications: `bsv-multicast/docs/brc-{124,126,127,128,129,130,131,132,133,134,135,139,142,143,144,148,149}-*.md`
 
 ## Data plane
 
@@ -86,7 +86,7 @@ a separate Redis connection is opened with the `bre:dedup:` key prefix
 | Direction     | RX NACK → TX re-multicast            | RX multicast       | TX multicast       |
 | Primary iface | `mc_iface` (receive)                 | `ingress_iface`    | `egress_iface`     |
 | Metrics port  | `:9400`                              | `:9200`            | `:9100`            |
-| Listen port   | `9001` (frames) / `9300` (NACK)      | `9001`             | `9000`             |
+| Listen port   | `9001` (frames) / `9300` (NACK)      | `9001`             | `8725`             |
 | Egress port   | `9001` (re-multicast)                | `egress_addr`      | `9001` (multicast) |
 | BGP           | **No**                               | Optional           | Optional           |
 | Firewall      | Simplified UDP                       | Full perimeter     | n/a                |

@@ -70,6 +70,22 @@ rl_group_rate: 200            # Retransmits per second per (srcIP, groupIdx)
 rl_group_burst: 50            # Burst size per (srcIP, groupIdx)
 rl_throttle_response: false   # Emit THROTTLED hint on seq/chain/group throttle (IP flood tier stays silent)
 
+# ------------------------------------------------------------
+# BRC-126 cross-domain NACK relay (one-hop). OFF by default.
+# Enable on an endpoint serving a downstream domain that cannot see the frames
+# it missed: on local cache miss it forwards the NACK upstream (Proxied flag,
+# so the upstream cannot re-proxy), re-caches the answer and retransmits it
+# locally. The tuning values are the binary's own defaults — override from a
+# MEASURED inter-fabric repair run, not by guesswork.
+# ------------------------------------------------------------
+proxy_enabled: false          # enable the one-hop relay
+upstream_retry_endpoints: ""  # comma-separated upstream host:port (required when proxy_enabled)
+proxy_workers: 4              # concurrent upstream fetches
+proxy_queue: 1024             # queued relay requests before shedding
+proxy_timeout: "300ms"        # per-fetch upstream deadline; MUST exceed upstream RTT
+proxy_max_endpoints: 0        # cap on upstreams tried per gap (0 = all)
+proxy_dedup_window: "60s"     # suppress duplicate upstream fetches for the same gap
+
 # Beacon configuration (BRC-126 endpoint discovery)
 nack_addr: ""                 # Explicit IPv6 for NACK bind + ADVERT; empty = auto-detect
 beacon_enabled: true          # Enable ADVERT beacon multicasting

@@ -92,4 +92,4 @@ a separate Redis connection is opened with the `bre:dedup:` key prefix
 | Firewall      | Simplified UDP                       | Full perimeter     | n/a                |
 
 Shared patterns: Go toolchain install, systemd unit hardening, netplan-based
-interface config on Ubuntu, rc.d on FreeBSD, management-plane helpers.
+interface config on Ubuntu/Debian, rc.d on FreeBSD, management-plane helpers.

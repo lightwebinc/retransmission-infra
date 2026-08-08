@@ -20,6 +20,25 @@
     - { name: net.ipv6.conf.all.force_mld_version, value: "2" }
     - { name: net.ipv6.mld_max_msf, value: "{{ networking_mld_max_msf | default('1024') }}" }
 
+# Ubuntu preinstalls netplan; Debian does not. The role owns its presence so
+# the netplan templates below (and `netplan apply`) work on both.
+- name: Install netplan (Debian family)
+  ansible.builtin.apt:
+    name: netplan.io
+    state: present
+  when:
+    - ansible_os_family == 'Debian'
+    - manage_netplan | default(true) | bool
+
+- name: Enable systemd-networkd (netplan renderer backend)
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    enabled: true
+    state: started
+  when:
+    - ansible_os_family == 'Debian'
+    - manage_netplan | default(true) | bool
+
 - name: Deploy netplan config for ethernet ingress
   ansible.builtin.template:
     src: netplan-ethernet.yaml.j2

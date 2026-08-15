@@ -62,7 +62,12 @@
 
 - name: Build retry-endpoint binary
   ansible.builtin.command:
-    cmd: "{{ go_install_dir }}/bin/go build -buildvcs=false -ldflags \"-s -w -X github.com/lightwebinc/retry-endpoint/metrics.Version={{ retry_version }}\" -o {{ retry_install_dir }}/retry-endpoint ."
+    # Folded scalar: the one-line form ran past the 160-char lint limit. Folding
+    # joins these lines with single spaces, so the command string is unchanged.
+    cmd: >-
+      {{ go_install_dir }}/bin/go build -buildvcs=false
+      -ldflags "-s -w -X github.com/lightwebinc/retry-endpoint/metrics.Version={{ retry_version }}"
+      -o {{ retry_install_dir }}/retry-endpoint .
     chdir: "{{ retry_install_dir }}"
   environment:
     PATH: "{{ go_install_dir }}/bin:{{ ansible_env.PATH }}"

@@ -34,6 +34,7 @@ Allowed on non-fabric interfaces:
 - TCP/22 (SSH) from `mgmt_cidrs_v4`
 - TCP/9400 (metrics) from `mgmt_cidrs_v4`
 - IPv6 equivalents from `mgmt_cidrs_v6`
+- GRE (protocol 47) from the tunnel remote (when `ingress_mode=gre`)
 - DNS/NTP/HTTP/HTTPS outbound
 
 ### Output chain (outbound)
@@ -46,7 +47,9 @@ Allowed from fabric interface:
 
 Allowed from non-fabric interfaces:
 - ICMPv4
+- GRE (protocol 47) to the tunnel remote (when `ingress_mode=gre`)
 - DNS/NTP/HTTP/HTTPS outbound
+- TCP to the Redis backend port (when `redis_addr` set)
 
 ### Forward chain
 

@@ -94,6 +94,13 @@ the retry-endpoint nodes to the backend nodes:
 | `redis` | 6379 | Redis/Valkey/Dragonfly client port |
 | `aerospike` | 3000 (service), 3001 (fabric), 3003 (info) | client → 3000; 3001/3003 between Aerospike nodes |
 
+**Host firewall note**: the shipped host firewall (`enable_firewall: true`,
+default-drop outbound) only renders an outbound allow for `redis_addr`, and
+only in the nftables template. With `cache_backend=aerospike` (or `redis` on
+FreeBSD/pf), extend the host ruleset with the outbound TCP allows above —
+otherwise the backend is silently blocked and, because cache errors fail open
+as misses, the endpoint degrades to a de facto memory-only cache.
+
 The optional `aerospike` role provisions a Community Edition node with a
 namespace matching `aerospike_namespace`. A multi-node Aerospike cluster also
 uses a **mesh or multicast heartbeat** (default multicast `239.1.99.222:9918`

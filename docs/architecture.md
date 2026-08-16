@@ -23,7 +23,8 @@ nodes, which cache frames and re-multicast missing data.
 
 Deploys `retry-endpoint`, which caches and retransmits BRC-124/BRC-128 tx frames,
 BRC-130 fragments, BRC-131 block control, BRC-132 subtree data, BRC-134 anchor
-frames, and BRC-142 bundle frames (FrameVer 0x08, cached opaquely).
+frames, BRC-142 bundle frames (FrameVer 0x08, cached opaquely), and BRC-149
+BEEF object frames (FrameVer 0x09, opt-in via `beef_enabled`).
 All frame versions share a single `HashKey ∥ SeqNum` cache key, so the retransmit path is
 frame-version-agnostic. NACK/ACK/MISS wire formats, cache indexing scheme, rate limiting
 tiers, and beacon discovery are documented in the service and project repos:

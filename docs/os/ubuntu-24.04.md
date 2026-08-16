@@ -52,8 +52,8 @@ The Go toolchain is installed to `/usr/local/go` (version configured via
 ## Multicast diagnostics
 
 ```sh
-# Multicast route
-ip -6 route show ff00::/16
+# Multicast route (scope-derived prefix, e.g. ff05::/16 for mc_scope=site)
+ip -6 route show to root ff00::/8
 
 # Live multicast frame receive capture (listen_port)
 tcpdump -i eth0 -nn 'udp and ip6 multicast and port 9001'

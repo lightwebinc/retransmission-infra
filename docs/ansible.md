@@ -33,7 +33,7 @@ ansible-playbook -i inventory/hosts.yml site.yml
 `site.yml` runs roles in this order on `retry_endpoint_nodes`:
 
 1. `common` — install packages, Go toolchain
-2. `perf-tuning` *(when `perf_tuning_enabled: true`)* — host network/CPU tuning
+2. `perf-tuning` *(default on; skipped when `perf_tuning_enabled: false`)* — host network/CPU tuning
 3. `retry-endpoint` — build binary, install service
 4. `networking` — configure `mc_iface`, GRE, multicast route
 5. `firewall` *(when `enable_firewall: true`)* — lock down the perimeter

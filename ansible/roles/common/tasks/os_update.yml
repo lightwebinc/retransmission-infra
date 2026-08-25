@@ -1,27 +1,30 @@
 ---
-- name: Update apt cache
-  ansible.builtin.apt:
-    update_cache: true
+# OS package upgrade dispatcher. Kept as the entry point so the `os_update` tag
+# (and anything that grew to depend on this filename) still resolves, while the
+# per-family work lives in os_update_debian.yml / os_update_freebsd.yml.
+#
+# This split exists because the apt path was previously the WHOLE file: a
+# FreeBSD host that ran --tags os_update hit ansible.builtin.apt and failed, so
+# in practice FreeBSD had no patch path at all. Dispatching mirrors how the role
+# already loads "{{ ansible_os_family | lower }}.yml" for its OS-specific setup.
+#
+# Still opt-in (`never` on the include in main.yml) — nothing patches a node
+# unless an operator, or a maintenance pass, asks for it by tag.
 
-- name: Dist-upgrade all packages
-  ansible.builtin.apt:
-    upgrade: dist
-    autoremove: true
-    autoclean: true
-  register: common_apt_result
+- name: Debian/Ubuntu package upgrade
+  ansible.builtin.include_tasks: os_update_debian.yml
+  when: ansible_os_family == 'Debian'
 
-- name: Check if reboot is required
-  ansible.builtin.stat:
-    path: /var/run/reboot-required
-  register: common_reboot_required
+- name: FreeBSD package + base-system upgrade
+  ansible.builtin.include_tasks: os_update_freebsd.yml
+  when: ansible_os_family == 'FreeBSD'
 
-- name: Reboot if required
-  ansible.builtin.reboot:
-    reboot_timeout: 300
-    msg: "Rebooting after OS update"
-  when: common_reboot_required.stat.exists
-
-- name: Wait for host to come back
-  ansible.builtin.wait_for_connection:
-    timeout: 120
-  when: common_reboot_required.stat.exists
+# Fail loudly rather than silently doing nothing: a "successful" no-op patch pass
+# on an unrecognised platform is how a host quietly stops being maintained.
+- name: Refuse to guess on an unsupported OS family
+  ansible.builtin.fail:
+    msg: >-
+      os_update has no path for ansible_os_family={{ ansible_os_family }}
+      on {{ inventory_hostname }}. Add one rather than leaving the host
+      unpatched — a silent skip reads as "patched" in every report.
+  when: ansible_os_family not in ['Debian', 'FreeBSD']

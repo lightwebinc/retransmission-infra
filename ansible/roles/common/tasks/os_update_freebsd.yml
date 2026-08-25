@@ -1,0 +1,82 @@
+---
+# FreeBSD package + base-system patching. This existed nowhere before: os_update
+# was apt-only, and freebsd.yml installs build deps with `state: present`, which
+# never upgrades anything. A FreeBSD host running the common role therefore had
+# NO patch path at all, even with --tags os_update.
+#
+# DELIBERATELY DOES NOT REBOOT. The Debian path reboots on
+# /var/run/reboot-required; the FreeBSD equivalent stays manual until the
+# documented BGP-convergence start gate exists (docs/os/freebsd-14.md): without
+# it a BGP-enabled node comes back with an unmitigated post-reboot SSM
+# black-hole, so an unattended reboot would trade a patch for an outage. The
+# pending-reboot state is reported instead, so an operator can schedule it.
+
+- name: Fetch base-system updates (FreeBSD)
+  # --not-running-from-cron suppresses the mail-if-no-tty behaviour; it does not
+  # change what is fetched. failed_when:false because a host already current
+  # exits non-zero on some releases — the install step below decides.
+  ansible.builtin.command:
+    cmd: freebsd-update --not-running-from-cron fetch
+  register: common_fbsd_fetch
+  changed_when: false
+  failed_when: false
+
+- name: Install fetched base-system updates (FreeBSD)
+  ansible.builtin.command:
+    cmd: freebsd-update --not-running-from-cron install
+  register: common_fbsd_install
+  when: "'No updates needed' not in (common_fbsd_fetch.stdout | default(''))"
+  changed_when: common_fbsd_install.rc == 0
+  # "no updates available" is the steady state, not a failure. Anything else is.
+  failed_when:
+    - common_fbsd_install.rc is defined
+    - common_fbsd_install.rc != 0
+    - >-
+      'No updates are available to install'
+      not in ((common_fbsd_install.stdout | default('')) + (common_fbsd_install.stderr | default('')))
+
+- name: Update the package catalogue (FreeBSD)
+  ansible.builtin.command:
+    cmd: pkg update -q
+  changed_when: false
+
+# The counterpart to the Debian dist-upgrade. freebsd.yml pins the build deps at
+# `state: present` (install-if-missing); this is the only task that moves
+# installed packages forward.
+- name: Upgrade all installed packages (FreeBSD)
+  community.general.pkgng:
+    name: "*"
+    state: latest
+  register: common_fbsd_pkg
+
+# Mirrors the Debian `apt clean`: a fabric-wide NodeDiskLow came from letting the
+# package cache accumulate after an upgrade, and these roots are no larger.
+- name: Drop the package cache (FreeBSD)
+  ansible.builtin.command:
+    cmd: pkg clean -ay
+  changed_when: false
+
+- name: Read running kernel version (FreeBSD)
+  ansible.builtin.command:
+    cmd: freebsd-version -r
+  register: common_fbsd_kernel_running
+  changed_when: false
+
+- name: Read installed kernel version (FreeBSD)
+  ansible.builtin.command:
+    cmd: freebsd-version -k
+  register: common_fbsd_kernel_installed
+  changed_when: false
+
+# The FreeBSD analogue of /var/run/reboot-required. Surfaced, never acted on —
+# see the header. An operator reboots this host by hand and verifies BGP/SSM
+# convergence afterwards.
+- name: Report pending reboot (FreeBSD — NOT automatic)
+  ansible.builtin.debug:
+    msg: >-
+      REBOOT REQUIRED on {{ inventory_hostname }}: running kernel
+      {{ common_fbsd_kernel_running.stdout }} != installed
+      {{ common_fbsd_kernel_installed.stdout }}. Not rebooting automatically —
+      a BGP-enabled FreeBSD node has no post-reboot SSM convergence gate, so
+      reboot it by hand and verify multicast delivery before moving on.
+  when: common_fbsd_kernel_running.stdout != common_fbsd_kernel_installed.stdout

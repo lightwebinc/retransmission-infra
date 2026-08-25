@@ -1,0 +1,21 @@
+# Managed by Ansible (integrated-infra common) — do not edit.
+[Unit]
+Description=Run bounded disk reclaim on a schedule
+# The point of the timer is to hold free space flat WITHOUT a converge. If the
+# service unit is ever removed, the timer must not keep a dangling reference.
+Requires=node-disk-maintenance.service
+
+[Timer]
+OnCalendar={{ common_disk_maintenance_oncalendar }}
+# A whole fabric's timers would otherwise fire in lockstep on the same wall clock
+# and put every node's root disk under I/O at once.
+RandomizedDelaySec={{ common_disk_maintenance_splay_sec }}
+# A node that was down (or a lab VM stopped for days) runs the missed reclaim on
+# next boot instead of waiting for the following window — the case where the disk
+# is most likely to have drifted.
+Persistent=true
+AccuracySec=1m
+Unit=node-disk-maintenance.service
+
+[Install]
+WantedBy=timers.target

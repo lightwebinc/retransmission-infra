@@ -1,0 +1,105 @@
+---
+# Keeps the root filesystem bounded WITHOUT depending on a converge running.
+# See roles/common/defaults/main.yml for what fills these nodes and how the
+# 2026-08-11 fabric-wide NodeDiskLow happened.
+#
+# Two layers, deliberately overlapping:
+#   1. a declarative ceiling, so the journal cannot grow past it in the first place;
+#   2. a timer that performs the reclaims the converge does, so a fabric that is not
+#      being deployed to still holds flat free space.
+# The converge-time fixes (apt clean in os_update.yml, the Clean Go build caches
+# handler) stay where they are — they keep a single converge from being the thing
+# that fills the disk, which the timer would only clean up after the fact.
+
+- name: Cap journald on-disk size
+  block:
+    - name: Ensure journald.conf.d exists
+      ansible.builtin.file:
+        path: /etc/systemd/journald.conf.d
+        state: directory
+        mode: "0755"
+
+    - name: Drop in a journal size cap
+      ansible.builtin.copy:
+        dest: /etc/systemd/journald.conf.d/10-size-cap.conf
+        mode: "0644"
+        content: |
+          # Managed by Ansible (integrated-infra common) — do not edit.
+          # Upstream leaves SystemMaxUse unset, i.e. 10% of the filesystem. These
+          # nodes cannot spend that, and a cap that scales with the disk is not a
+          # cap — every fabric node had in fact grown a ~900M journal.
+          [Journal]
+          SystemMaxUse={{ common_journal_max_use }}
+          SystemKeepFree={{ common_journal_keep_free }}
+          MaxRetentionSec={{ common_journal_max_retention }}
+      notify: Restart systemd-journald
+
+- name: Scheduled disk reclaim
+  when: common_disk_maintenance | bool
+  block:
+    - name: Deploy disk-maintenance script
+      ansible.builtin.template:
+        src: node-disk-maintenance.sh.j2
+        dest: /usr/local/sbin/node-disk-maintenance.sh
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Deploy disk-maintenance systemd service
+      ansible.builtin.template:
+        src: node-disk-maintenance.service.j2
+        dest: /etc/systemd/system/node-disk-maintenance.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart disk-maintenance timer
+
+    - name: Deploy disk-maintenance systemd timer
+      ansible.builtin.template:
+        src: node-disk-maintenance.timer.j2
+        dest: /etc/systemd/system/node-disk-maintenance.timer
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart disk-maintenance timer
+
+    # The textfile collector reads this directory on every scrape whether or not
+    # the timer has ever run, so it has to exist from the first converge — an
+    # unreadable directory makes node_exporter log a collector error per scrape.
+    - name: Ensure node_exporter textfile directory exists
+      ansible.builtin.file:
+        path: "{{ node_exporter_textfile_dir | default('/var/lib/node_exporter/textfile_collector') }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Enable and start disk-maintenance timer
+      ansible.builtin.systemd:
+        name: node-disk-maintenance.timer
+        enabled: true
+        state: started
+        daemon_reload: true
+
+# Disabling the flag has to REMOVE the units, not just stop configuring them: a
+# timer a previous pass installed keeps firing forever otherwise. Same reasoning as
+# the datapath-cleanup role — skipped is not removed.
+- name: Remove disk-maintenance when disabled
+  when: not (common_disk_maintenance | bool)
+  block:
+    - name: Stop and disable disk-maintenance timer
+      ansible.builtin.systemd:
+        name: node-disk-maintenance.timer
+        enabled: false
+        state: stopped
+      failed_when: false
+
+    - name: Remove disk-maintenance unit and script files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/systemd/system/node-disk-maintenance.timer
+        - /etc/systemd/system/node-disk-maintenance.service
+        - /usr/local/sbin/node-disk-maintenance.sh
+      notify: Reload systemd daemon

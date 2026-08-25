@@ -1,0 +1,82 @@
+#!/bin/sh
+# Managed by Ansible (integrated-infra common) — do not edit.
+#
+# Bounded, unattended disk reclaim for fabric/edge nodes. Every step here is
+# either a cache the system will rebuild on demand or a log past its retention —
+# nothing this script removes changes what the node serves.
+#
+# Deliberately NOT done here:
+#   - `apt-get autoremove`. It is already part of the converge's dist-upgrade, and
+#     unattended kernel removal on a node whose forwarding behaviour depends on the
+#     running kernel (ip6gre multicast decap) is an operator decision, not a timer's.
+#   - anything under /usr/src or /lib/modules, for the same reason.
+#   - predictive/threshold logic. The reclaims are cheap and idempotent, so running
+#     them unconditionally is simpler than deciding whether they are needed, and it
+#     keeps free space flat instead of sawtoothing against an alert threshold.
+set -u
+
+MOUNT=/
+TEXTFILE_DIR="{{ node_exporter_textfile_dir | default('/var/lib/node_exporter/textfile_collector') }}"
+OUT="$TEXTFILE_DIR/node_disk_maintenance.prom"
+GOCACHE_MAX_AGE_DAYS={{ common_gocache_max_age_days }}
+JOURNAL_MAX_USE="{{ common_journal_max_use }}"
+
+avail() { df --output=avail -B1 "$MOUNT" | tail -1; }
+
+before=$(avail)
+rc=0
+
+# 1. apt archive cache. `clean`, not `autoclean`: autoclean keeps every .deb the
+#    repo can still serve, which after a dist-upgrade is all of them.
+if command -v apt-get >/dev/null 2>&1; then
+    apt-get clean >/dev/null 2>&1 || rc=1
+fi
+
+# 2. Go build/module caches from the on-node build roles. `-newermt -N days` walks
+#    for ANY file touched inside the window, not just the directory mtime, so a
+#    converge that is mid-build (or that built recently enough to be worth keeping
+#    warm) leaves the tree alone. `-print -quit` stops at the first hit.
+for d in /tmp/gopath /tmp/gocache; do
+    [ -d "$d" ] || continue
+    if [ -z "$(find "$d" -newermt "-${GOCACHE_MAX_AGE_DAYS} days" -print -quit 2>/dev/null)" ]; then
+        rm -rf "$d" || rc=1
+    fi
+done
+
+# 3. Journal. journald enforces SystemMaxUse itself at rotation, so this is the
+#    backstop for the case where it has not rotated yet — and the only thing that
+#    shrinks an over-cap journal on a node whose journald has not been restarted
+#    since the cap was deployed.
+if command -v journalctl >/dev/null 2>&1; then
+    journalctl --vacuum-size="$JOURNAL_MAX_USE" >/dev/null 2>&1 || rc=1
+fi
+
+after=$(avail)
+reclaimed=$((after - before))
+# Normal operation on a busy node: services wrote more than the reclaim freed.
+# Report 0 rather than a negative, which would break rate()/sum() downstream.
+[ "$reclaimed" -lt 0 ] && reclaimed=0
+
+# Publish through the node_exporter textfile collector. Written to a temp file in
+# the same directory and renamed, because the collector reads this path on every
+# scrape and a partial file is a parse error for the WHOLE scrape, not just this
+# metric.
+if mkdir -p "$TEXTFILE_DIR" 2>/dev/null; then
+    tmp="$OUT.$$"
+    {
+        echo "# HELP node_disk_maintenance_last_run_seconds Unix time the disk-maintenance timer last completed."
+        echo "# TYPE node_disk_maintenance_last_run_seconds gauge"
+        echo "node_disk_maintenance_last_run_seconds $(date +%s)"
+        echo "# HELP node_disk_maintenance_last_success 1 if every reclaim step in the last run succeeded."
+        echo "# TYPE node_disk_maintenance_last_success gauge"
+        echo "node_disk_maintenance_last_success $([ "$rc" -eq 0 ] && echo 1 || echo 0)"
+        echo "# HELP node_disk_maintenance_reclaimed_bytes Bytes freed on / by the last run."
+        echo "# TYPE node_disk_maintenance_reclaimed_bytes gauge"
+        echo "node_disk_maintenance_reclaimed_bytes $reclaimed"
+        echo "# HELP node_disk_maintenance_avail_bytes Bytes free on / after the last run."
+        echo "# TYPE node_disk_maintenance_avail_bytes gauge"
+        echo "node_disk_maintenance_avail_bytes $after"
+    } > "$tmp" 2>/dev/null && chmod 0644 "$tmp" && mv "$tmp" "$OUT"
+fi
+
+exit "$rc"

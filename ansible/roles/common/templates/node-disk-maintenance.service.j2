@@ -1,0 +1,21 @@
+# Managed by Ansible (integrated-infra common) — do not edit.
+[Unit]
+Description=Bounded disk reclaim (apt cache, stale Go build caches, journal)
+Documentation=man:apt-get(8) man:journalctl(1)
+# Never race the converge's own apt work: both take /var/lib/dpkg/lock-frontend,
+# and the converge masks the apt-daily timers precisely to keep that lock free.
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/node-disk-maintenance.sh
+# Runs as root: apt-get clean, the Go module cache (0555 trees) and
+# `journalctl --vacuum-size` all need it. Kept unsandboxed for the same reason —
+# the write set is /var/cache/apt, /tmp and /var/log/journal, which a strict
+# ProtectSystem would have to punch through one by one for no gain.
+Nice=10
+IOSchedulingClass=idle
+# A forwarding node must not stall on housekeeping. The reclaim is resumable
+# (every step is idempotent and the next firing repeats it), so a timeout is a
+# delay, not a failure mode.
+TimeoutStartSec=600

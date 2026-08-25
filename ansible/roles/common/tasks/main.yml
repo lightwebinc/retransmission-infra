@@ -5,6 +5,13 @@
 - name: Install Go toolchain
   ansible.builtin.include_tasks: go.yml
 
+# Runs on EVERY converge, not under the `never`-tagged os_update block: the whole
+# point is that free space stays bounded without anyone choosing to run a task.
+# systemd/journald/apt-specific, so Linux only.
+- name: Disk hygiene (journal cap + scheduled reclaim)
+  ansible.builtin.include_tasks: disk_hygiene.yml
+  when: ansible_os_family != 'FreeBSD'
+
 - name: OS package upgrade (on-demand)
   ansible.builtin.include_tasks:
     file: os_update.yml

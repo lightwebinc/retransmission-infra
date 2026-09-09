@@ -91,3 +91,58 @@ jobs:
       - name: terraform fmt check
         run: terraform fmt -check -recursive
         working-directory: ${{ matrix.dir }}
+
+  firewall-policy:
+    name: firewall syntax + policy (nft & pf)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install nftables + ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nftables ansible
+          ansible-galaxy collection install community.general ansible.posix
+
+      - name: Render both backends with one fixture
+        run: |
+          mkdir -p /tmp/fw-check
+          cat > /tmp/fw-check/vars.yml <<'EOF'
+          firewall_fabric_iface: eth0
+          firewall_metrics_port: "9400"
+          firewall_retry_endpoint_hosts: ["fd00:2::10"]
+          firewall_upstream_retry_hosts: []
+          listen_port: 9001
+          egress_port: 9001
+          beacon_port: 9300
+          nack_port: 9300
+          mgmt_cidrs_v4: ["10.0.0.0/8"]
+          mgmt_cidrs_v6: ["fd00:1::/64"]
+          enable_bgp: false
+          EOF
+          cat > /tmp/fw-check/render.yml <<EOF
+          - hosts: localhost
+            gather_facts: false
+            connection: local
+            vars_files:
+              - /tmp/fw-check/vars.yml
+            tasks:
+              - template:
+                  src: ${GITHUB_WORKSPACE}/ansible/roles/firewall/templates/retry-endpoint.nft.j2
+                  dest: /tmp/fw-check/rendered.nft
+              - template:
+                  src: ${GITHUB_WORKSPACE}/ansible/roles/firewall/templates/retry-endpoint.pf.conf.j2
+                  dest: /tmp/fw-check/rendered.pf
+          EOF
+          ansible-playbook /tmp/fw-check/render.yml
+
+      - name: Validate rendered nft ruleset (syntax)
+        run: sudo nft -c -f /tmp/fw-check/rendered.nft
+
+      # Syntax is not safety, and pf has no syntax gate on Linux runners. Both
+      # backends are held to the same perimeter invariants so a fix to one
+      # cannot ship without its twin.
+      - name: Assert perimeter policy (both backends)
+        run: |
+          python3 ci/firewall-policy-check.py --backend nft /tmp/fw-check/rendered.nft
+          python3 ci/firewall-policy-check.py --backend pf  /tmp/fw-check/rendered.pf

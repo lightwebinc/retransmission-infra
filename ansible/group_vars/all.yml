@@ -8,7 +8,10 @@
 # retry-endpoint source and build
 # ------------------------------------------------------------
 retry_repo: "https://github.com/lightwebinc/retry-endpoint.git"
-retry_version: "v1.9.0"       # release tag; override with "main" for lab builds from tip
+retry_version: "v1.10.1"      # release tag; override with "main" for lab builds from tip
+# NOTE: keep this at or above v1.9.5. Releases before it re-injected a proxied
+# cross-domain repair by MULTICAST regardless of the endpoint retransmit mode,
+# which is the amplifier behind the observed own-source repair storm.
 retry_install_dir: "/opt/retry-endpoint"
 retry_bin_dir: "/usr/local/bin"
 retry_user: "retry-endpoint"

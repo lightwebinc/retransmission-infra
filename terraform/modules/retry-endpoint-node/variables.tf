@@ -295,7 +295,7 @@ variable "rl_sequence_window" {
 }
 
 variable "shard_bits" {
-  description = "Shard bit width (1-24); must match fabric"
+  description = "Shard bit width (0-12 per BRC-129); must match fabric"
   type        = number
   default     = 2
 }

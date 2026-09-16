@@ -8,8 +8,8 @@ nodes, which cache frames and re-multicast missing data.
 
 ```
        ┌───────────────┐     IPv6 multicast fabric      ┌────────────────┐
-       │ shard-listener│ ───►  NACK (UDP, send-only)  ──► retry-endpoint │
-       │               │                                │                │
+       │ shard-listener│ ───►  NACK (UDP request)  ──►  │ retry-endpoint │
+       │               │ ◄── ACK / MISS / THROTTLED ──  │                │
        └───────────────┘                                └──────┬─────────┘
                                                                │ re-multicast
                                                                ▼

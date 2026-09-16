@@ -6,6 +6,10 @@ retry_endpoint_nodes:
   hosts:
     retry-endpoint-1:
       ansible_host: 10.0.3.10
+      # Both must name the fabric NIC: mc_iface is what the binary binds
+      # (MC_IFACE) and the firewall treats as the fabric iface; ingress_iface is
+      # what the networking role configures (netplan / rc.conf + multicast route).
+      mc_iface: eth0
       ingress_iface: eth0
       mgmt_cidrs_v4:
         - 10.0.0.0/8

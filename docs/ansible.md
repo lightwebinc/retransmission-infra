@@ -55,7 +55,7 @@ See `ansible/group_vars/all.yml` for the full list. Quick reference:
 | `egress_iface` | `eth0` | Retransmission egress interface |
 | `egress_port` | `9001` | Retransmission multicast (matches listener ingress) |
 | `shard_bits` | `2` | Must match fabric |
-| `retry_version` | `v1.10.1` | Git ref to build (tag, branch, or SHA); keep ≥ `v1.9.5` (see the note in `group_vars/all.yml`) |
+| `retry_version` | `v1.11.1` | Git ref to build (tag, branch, or SHA); keep ≥ `v1.9.5` (see the note in `group_vars/all.yml`), and keep the `retry-endpoint-node` Terraform default in step |
 | `retry_force_build` | `false` | Force a rebuild even if the binary exists |
 | `retry_local_binary` | `""` | Push a pre-built local binary (skips git/build) |
 | `source_mode` | `asm` | Or `ssm` (then `bind_source` is required and `ssm_publishers_static` lists the publishers to (S,G)-join) |
@@ -111,9 +111,10 @@ on FreeBSD (pending reboots are reported, never performed). Knobs live in
 | `common_journal_max_use` | `300M` | journald `SystemMaxUse` |
 | `common_journal_keep_free` | `1G` | journald `SystemKeepFree` |
 | `common_journal_max_retention` | `2week` | journald `MaxRetentionSec` |
+| `node_exporter_textfile_dir` | `/var/lib/node_exporter/textfile_collector` | Where the reclaim script drops its node_exporter textfile metric |
 
 The reclaim script drops a node_exporter textfile under
-`node_exporter_textfile_dir` (default `/var/lib/node_exporter/textfile_collector`).
+`node_exporter_textfile_dir`.
 
 ## Common operations
 

@@ -16,6 +16,17 @@ Provisions a single retry-endpoint host:
 Inputs include the full retry-endpoint configuration (ports, shard bits,
 cache backend, rate limits, metrics, OTLP interval, firewall mgmt CIDRs).
 
+#### Version pin coupling
+
+Inputs are passed as `--extra-vars`, which **outrank**
+`ansible/group_vars/all.yml`. `retry_version` is therefore pinned twice: the
+`variables.tf` default must equal the `retry_version` in `group_vars/all.yml`
+(`v1.11.1` today) and, like it, must never drop below **`v1.9.5`** — releases
+before that re-injected proxied cross-domain repairs by multicast whatever the
+endpoint's retransmit mode, the amplifier behind the own-source repair storm. A
+stale Terraform default puts that build back on a node while `group_vars` still
+reads as pinned.
+
 ## Examples
 
 ### `examples/generic/`

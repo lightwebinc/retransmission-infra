@@ -243,7 +243,11 @@ variable "retry_repo" {
 variable "retry_version" {
   description = "Git ref (branch, tag, or SHA) to check out; \"main\" for lab builds from tip"
   type        = string
-  default     = "v1.5.0"
+  # Keep in step with `retry_version` in ansible/group_vars/all.yml, and NEVER
+  # below v1.9.5: this is passed as --extra-vars and outranks group_vars, so a
+  # stale default here re-deploys the multicast repair amplifier that the pin
+  # exists to keep off the fleet (see the note in group_vars/all.yml).
+  default = "v1.11.1"
 }
 
 variable "rl_chain_rate" {

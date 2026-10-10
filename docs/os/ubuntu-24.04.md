@@ -1,6 +1,11 @@
 # Ubuntu 24.04 (Noble)
 
-## Service management
+Packages, systemd and netplan conventions and generic diagnostics shared by all
+infra repositories are in the canonical
+[Ubuntu 24.04 notes](https://github.com/lightwebinc/bsv-multicast/blob/main/docs/infra/os/ubuntu-24.04.md). This page lists what is specific to
+`retry-endpoint`.
+
+## Service
 
 ```sh
 systemctl status retry-endpoint
@@ -8,69 +13,28 @@ systemctl restart retry-endpoint
 journalctl -u retry-endpoint -f
 ```
 
-Unit file: `/etc/systemd/system/retry-endpoint.service`
-(see template `ansible/roles/retry-endpoint/templates/retry-endpoint.service.j2`).
+## File locations
 
-Environment file: `/etc/retry-endpoint/config.env`.
+| Path | Content |
+|---|---|
+| `/etc/systemd/system/retry-endpoint.service` | systemd unit (template `retry-endpoint.service.j2`) |
+| `/etc/retry-endpoint/config.env` | Environment config |
+| `/etc/netplan/60-retry-endpoint.yaml` | Ingress ethernet |
+| `/etc/netplan/61-retry-endpoint-gre.yaml` | GRE6 tunnel (`ingress_mode: gre`) |
+| `/etc/sysctl.d/60-retry-endpoint.conf` | Sysctls |
+| `/etc/nftables.d/60-retry-endpoint.nft` | Firewall ruleset (`nft list table inet retry-endpoint`) |
 
-## Network configuration
-
-Netplan:
-
-- `/etc/netplan/60-retry-endpoint.yaml` — ingress ethernet
-- `/etc/netplan/61-retry-endpoint-gre.yaml` — GRE6 tunnel (when
-  `ingress_mode: gre`)
-
-Apply:
+## Diagnostics
 
 ```sh
-netplan apply
-```
-
-Sysctl: `/etc/sysctl.d/60-retry-endpoint.conf`.
-
-## Firewall
-
-nftables ruleset: `/etc/nftables.d/60-retry-endpoint.nft` (included from
-`/etc/nftables.conf`).
-
-```sh
-nft list table inet retry-endpoint
-systemctl status nftables
-```
-
-## Package installation
-
-The `common` role installs:
-
-- `acl`, `build-essential`, `git`, `curl`, `ca-certificates`, `tar`
-- `nftables` (when `enable_firewall: true`)
-
-The Go toolchain is installed to `/usr/local/go` (version configured via
-`go_version`).
-
-## Multicast diagnostics
-
-```sh
-# Multicast route (scope-derived prefix, e.g. ff05::/16 for mc_scope=site)
-ip -6 route show to root ff00::/8
-
-# Live multicast frame receive capture (listen_port)
+# Multicast frame receive (listen_port) and re-multicast (egress_port)
 tcpdump -i eth0 -nn 'udp and ip6 multicast and port 9001'
 
-# Live NACK receive capture — NACKs are unicast to nack_port
-# (multicast on 9300 is beacon ADVERTs, not NACKs)
+# NACKs are unicast to nack_port (multicast on 9300 is beacon ADVERTs)
 tcpdump -i eth0 -nn 'udp and port 9300 and not ip6 multicast'
-
-# Live re-multicast capture (egress_port)
-tcpdump -i eth0 -nn 'udp and ip6 multicast and port 9001'
-
-# Sysctl state
-sysctl net.ipv6.conf.eth0.accept_ra
 ```
 
 ## Known issues
 
-- **`mc_iface` precedence.** Must be set per-host, not on group_vars.
-- **LXD `acl` missing.** Installed by `common` role.
-- **`git` "dubious ownership".** Handled by setting `safe.directory`.
+- **`mc_iface` precedence.** Set it (and `ingress_iface`) per host, not in
+  group vars.

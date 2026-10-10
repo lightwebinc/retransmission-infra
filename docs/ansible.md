@@ -55,7 +55,7 @@ See `ansible/group_vars/all.yml` for the full list. Quick reference:
 | `egress_iface` | `eth0` | Retransmission egress interface |
 | `egress_port` | `9001` | Retransmission multicast (matches listener ingress) |
 | `shard_bits` | `2` | Must match fabric |
-| `retry_version` | `v1.12.0` | Git ref to build (tag, branch, or SHA); keep ≥ `v1.9.5` (see the note in `group_vars/all.yml`), and keep the `retry-endpoint-node` Terraform default in step |
+| `retry_version` | see `group_vars/all.yml` | Git ref to build (tag, branch, or SHA); keep ≥ `v1.9.5` (see the note in `group_vars/all.yml`), and keep the `retry-endpoint-node` Terraform default in step |
 | `retry_force_build` | `false` | Force a rebuild even if the binary exists |
 | `retry_local_binary` | `""` | Push a pre-built local binary (skips git/build) |
 | `source_mode` | `asm` | Or `ssm` (then `bind_source` is required and `ssm_publishers_static` lists the publishers to (S,G)-join) |
@@ -73,9 +73,9 @@ See `ansible/group_vars/all.yml` for the full list. Quick reference:
 | `rl_group_rate` | `200/s` | Retransmits per second per (srcIP, groupIdx) |
 | `rl_throttle_response` | `false` | Emit THROTTLED hint on seq/chain/group throttle |
 | `proxy_enabled` | `false` | BRC-126 one-hop NACK relay to `upstream_retry_endpoints` (tuning: `proxy_workers`, `proxy_queue`, `proxy_timeout`, `proxy_max_endpoints`, `proxy_dedup_window`) |
-| `subtree_data_enabled` | unset (`false`) | BRC-132 subtree-data caching; under `ssm` also set `ssm_bootstrap_subtree_announce` (not declared in `group_vars/all.yml`) |
-| `beef_enabled` / `beef_shard_bits` / `cache_ttl_beef` | unset (`false` / `0` / `60s`) | BRC-148 BEEF plane caching (retry ≥ v1.7.0); `beef_shard_bits` MUST match the proxies (not declared in `group_vars/all.yml`) |
-| `retry_tee_listen` / `retry_mc_join_enabled` | unset (`""` / `true`) | `TEE_LISTEN` loopback mirror from a co-resident proxy/listener `-retry-tee`; `false` = tee-only ingest, requires the tee address (retry ≥ v1.10.1; not declared in `group_vars/all.yml`) |
+| `subtree_data_enabled` | `false` | BRC-132 subtree-data caching; under `ssm` also set `ssm_bootstrap_subtree_announce` |
+| `beef_enabled` / `beef_shard_bits` / `cache_ttl_beef` | `false` / `0` / `60s` | BRC-148 BEEF plane caching; `beef_shard_bits` MUST match the proxies |
+| `retry_tee_listen` / `retry_mc_join_enabled` | `""` / `true` | `TEE_LISTEN` loopback mirror from a co-resident proxy/listener `-retry-tee`; `false` = tee-only ingest, requires the tee address |
 | `metrics_addr` | `:9400` |  |
 | `otlp_endpoint` | `""` |  |
 | `otlp_interval` | `30s` |  |

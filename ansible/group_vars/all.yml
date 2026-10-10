@@ -20,6 +20,10 @@ retry_install_dir: "/opt/retry-endpoint"
 retry_bin_dir: "/usr/local/bin"
 retry_user: "retry-endpoint"
 retry_group: "retry-endpoint"
+# Push a locally pre-built binary instead of clone+build (empty = build on host).
+retry_local_binary: ""
+# Force a rebuild even when a binary already exists in retry_install_dir.
+retry_force_build: false
 
 # Go toolchain version (used when building from source)
 # Must be >= the `go` directive in retry-endpoint's go.mod at retry_version
@@ -36,6 +40,18 @@ listen_port: 9001             # UDP port for multicast frame receive (matches li
 nack_port: 9300               # UDP port for NACK listener (listeners dial this)
 egress_iface: "eth0"          # Interface for retransmission egress
 egress_port: 9001             # UDP port for retransmission multicast (matches listener ingress)
+egress_multicast_loop: false  # IPV6_MULTICAST_LOOP on retransmits (collapsed/mesh node only)
+# Tee ingest: loopback address fed by a co-resident proxy/listener -retry-tee,
+# e.g. "[::1]:9002" (empty = off). retry_mc_join_enabled false = tee-only
+# ingest (no multicast join); requires retry_tee_listen.
+retry_tee_listen: ""
+retry_mc_join_enabled: true
+# BRC-132 subtree-data caching (under ssm also set ssm_bootstrap_subtree_announce).
+subtree_data_enabled: false
+# BRC-148 BEEF plane caching; beef_shard_bits MUST match the proxies.
+beef_enabled: false
+beef_shard_bits: 0
+cache_ttl_beef: "60s"
 
 # Multicast configuration
 shard_bits: 2
@@ -50,6 +66,10 @@ mc_group_id: "0x000B"              # IANA group-id (default 0x000B = IANA Bitcoi
 source_mode: "asm"            # ssm | asm
 bind_source: ""               # per-node source address; REQUIRED when source_mode=ssm
 ssm_publishers_static: ""     # comma-separated publisher addresses (ssm only)
+ssm_bootstrap_subtree_announce: ""  # SSM sources of the subtree-announce group (with subtree_data_enabled)
+ssm_bootstrap_manifest: ""    # SSM sources of the manifest group (rendered only when set)
+ssm_bootstrap_beacon: ""      # SSM sources of the beacon group (rendered only when set)
+ssm_bootstrap_refresh: "30s"  # DNS re-resolve interval for SSM bootstrap entries
 
 # Cache configuration (modular shard-common/cache backend)
 # See https://github.com/lightwebinc/shard-common/blob/main/docs/cache-backend.md

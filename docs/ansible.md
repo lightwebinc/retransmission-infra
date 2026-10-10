@@ -55,7 +55,7 @@ See `ansible/group_vars/all.yml` for the full list. Quick reference:
 | `egress_iface` | `eth0` | Retransmission egress interface |
 | `egress_port` | `9001` | Retransmission multicast (matches listener ingress) |
 | `shard_bits` | `2` | Must match fabric |
-| `retry_version` | `v1.11.1` | Git ref to build (tag, branch, or SHA); keep ≥ `v1.9.5` (see the note in `group_vars/all.yml`), and keep the `retry-endpoint-node` Terraform default in step |
+| `retry_version` | `v1.12.0` | Git ref to build (tag, branch, or SHA); keep ≥ `v1.9.5` (see the note in `group_vars/all.yml`), and keep the `retry-endpoint-node` Terraform default in step |
 | `retry_force_build` | `false` | Force a rebuild even if the binary exists |
 | `retry_local_binary` | `""` | Push a pre-built local binary (skips git/build) |
 | `source_mode` | `asm` | Or `ssm` (then `bind_source` is required and `ssm_publishers_static` lists the publishers to (S,G)-join) |

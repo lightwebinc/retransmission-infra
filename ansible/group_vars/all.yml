@@ -59,11 +59,10 @@ mc_scope: "site"              # link | site | org | global
 mc_group_id: "0x000B"              # IANA group-id (default 0x000B = IANA Bitcoin)
 
 # Addressing model. ssm (FF3x, RFC 4607) is the fabric's first-class mode and
-# the Helm-chart default; asm (FF0x) stays the default here for
-# continuity with existing VM deployments. Under ssm, bind_source is required
+# the default here and in the Helm charts; asm (FF0x) is the lab fallback. Under ssm, bind_source is required
 # (a routable per-node source for RPF) and ssm_publishers_static lists the
 # publishers whose (S,G) trees this endpoint joins to cache frames.
-source_mode: "asm"            # ssm | asm
+source_mode: "ssm"            # ssm (default) | asm (lab fallback); ssm needs bind_source
 bind_source: ""               # per-node source address; REQUIRED when source_mode=ssm
 ssm_publishers_static: ""     # comma-separated publisher addresses (ssm only)
 ssm_bootstrap_subtree_announce: ""  # SSM sources of the subtree-announce group (with subtree_data_enabled)

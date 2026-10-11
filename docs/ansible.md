@@ -102,7 +102,7 @@ by multicast, amplifying repair storms).
 | `shard_bits` | `2` | Must match fabric |
 | `mc_scope` | `site` | link \| site \| org \| global |
 | `mc_group_id` | `0x000B` | IANA group-id (default 0x000B = IANA Bitcoin) |
-| `source_mode` | `asm` | Or `ssm` (then `bind_source` is required and `ssm_publishers_static` lists the publishers to (S,G)-join) |
+| `source_mode` | `ssm` | Default (`bind_source` is required and `ssm_publishers_static` lists the publishers to (S,G)-join); `asm` is the lab fallback |
 | `bind_source` | `""` | per-node source address; REQUIRED when source_mode=ssm |
 | `ssm_publishers_static` | `""` | comma-separated publisher addresses (ssm only) |
 | `ssm_bootstrap_subtree_announce` | `""` | SSM sources of the subtree-announce group (with subtree_data_enabled) |

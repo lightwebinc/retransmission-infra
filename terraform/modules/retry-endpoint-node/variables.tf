@@ -247,7 +247,7 @@ variable "retry_version" {
   # below v1.9.5: this is passed as --extra-vars and outranks group_vars, so a
   # stale default here re-deploys the multicast repair amplifier that the pin
   # exists to keep off the fleet (see the note in group_vars/all.yml).
-  default = "v1.12.0"
+  default = "v1.14.1"
 }
 
 variable "rl_chain_rate" {

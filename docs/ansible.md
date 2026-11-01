@@ -28,11 +28,11 @@ ansible/
 
 `site.yml` runs roles in this order on `retry_endpoint_nodes`:
 
-1. `common` — install packages, Go toolchain, journald cap + disk-reclaim timer (Linux); opt-in `--tags os_update` patching
-2. `perf-tuning` *(default on; skipped when `perf_tuning_enabled: false`)* — host network/CPU tuning
-3. `retry-endpoint` — build binary, install service
-4. `networking` — configure `mc_iface`, GRE, multicast route
-5. `firewall` *(when `enable_firewall: true`)* — lock down the perimeter
+1. `common`: install packages, Go toolchain, journald cap + disk-reclaim timer (Linux); opt-in `--tags os_update` patching
+2. `perf-tuning` *(default on; skipped when `perf_tuning_enabled: false`)*: host network/CPU tuning
+3. `retry-endpoint`: build binary, install service
+4. `networking`: configure `mc_iface`, GRE, multicast route
+5. `firewall` *(when `enable_firewall: true`)*: lock down the perimeter
 
 Firewall runs **after** networking so interface names resolve. Optional
 `redis_nodes` and `aerospike_nodes` plays (cache-backend hosts) run first.
@@ -43,7 +43,7 @@ Because `group_vars/all.yml` has higher precedence than inventory group vars,
 the following must be set on each host (not in group vars):
 
 - `mc_iface` and `ingress_iface` (set both to the same NIC)
-- `mgmt_cidrs_v4`, `mgmt_cidrs_v6` — firewall allow-list; `group_vars/all.yml` defaults to empty lists
+- `mgmt_cidrs_v4`, `mgmt_cidrs_v6`: firewall allow-list; `group_vars/all.yml` defaults to empty lists
 - `ansible_host`, `ansible_user`, `ansible_ssh_private_key_file`
 
 ## Common operations

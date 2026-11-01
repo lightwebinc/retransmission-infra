@@ -97,14 +97,14 @@ the retry-endpoint nodes to the backend nodes:
 **Host firewall note**: the shipped host firewall (`enable_firewall: true`,
 default-drop outbound) only renders an outbound allow for `redis_addr`, and
 only in the nftables template. With `cache_backend=aerospike` (or `redis` on
-FreeBSD/pf), extend the host ruleset with the outbound TCP allows above —
+FreeBSD/pf), extend the host ruleset with the outbound TCP allows above;
 otherwise the backend is silently blocked and, because cache errors fail open
 as misses, the endpoint degrades to a de facto memory-only cache.
 
 The optional `aerospike` role provisions a Community Edition node with a
 namespace matching `aerospike_namespace`. A multi-node Aerospike cluster also
 uses a **mesh or multicast heartbeat** (default multicast `239.1.99.222:9918`
-in the role's `aerospike.conf.j2`) on the node interconnect — keep it on the
+in the role's `aerospike.conf.j2`) on the node interconnect; keep it on the
 management segment, away from the BSV multicast groups. Aerospike TTL is
 whole-seconds (floor 1s); the retry-endpoint rounds up, and the namespace's
 `default-ttl` MUST stay `0` so client-supplied per-frame TTLs are honoured.

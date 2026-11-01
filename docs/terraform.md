@@ -39,5 +39,5 @@ nftables ruleset from the `firewall` role is the fine-grained one (see
 | `egress_port` | `9001` | Retransmission multicast (matches listener ingress) |
 | `metrics_addr` | `:9400` | Avoid collision with listener (`:9200`) and proxy (`:9100`) |
 | `enable_firewall` | `true` | Default-on for security |
-| `otlp_interval` | `"30s"` | Preserves prior hardcoded value |
+| `otlp_interval` | `"30s"` | Matches the binary default |
 | `cache_backend` | `memory` | In-memory cache by default |

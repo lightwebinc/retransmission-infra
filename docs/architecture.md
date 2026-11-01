@@ -1,7 +1,7 @@
 # Architecture
 
 `retransmission-infra` is the deployment/operations repo for
-[`retry-endpoint`](https://github.com/lightwebinc/retry-endpoint) — the
+[`retry-endpoint`](https://github.com/lightwebinc/retry-endpoint), the
 NACK-aware retransmission node in the Bitcoin shard multicast fabric. When
 listeners detect sequence gaps, they send NACK datagrams to retry-endpoint
 nodes, which cache frames and re-multicast missing data.
@@ -29,20 +29,20 @@ All frame versions share a single `HashKey ∥ SeqNum` cache key, so the retrans
 frame-version-agnostic. NACK/ACK/MISS wire formats, cache indexing scheme, rate limiting
 tiers, and beacon discovery are documented in the service and project repos:
 
-- [retry-endpoint — Architecture](https://github.com/lightwebinc/retry-endpoint/blob/main/docs/architecture.md)
-- [retry-endpoint — Configuration](https://github.com/lightwebinc/retry-endpoint/blob/main/docs/configuration.md)
-- [bsv-multicast — DESIGN.md](https://github.com/lightwebinc/bsv-multicast/blob/main/DESIGN.md)
+- [retry-endpoint: Architecture](https://github.com/lightwebinc/retry-endpoint/blob/main/docs/architecture.md)
+- [retry-endpoint: Configuration](https://github.com/lightwebinc/retry-endpoint/blob/main/docs/configuration.md)
+- [bsv-multicast: DESIGN.md](https://github.com/lightwebinc/bsv-multicast/blob/main/DESIGN.md)
 - BRC specifications: `bsv-multicast/docs/brc-{124,126,127,128,129,130,131,132,133,134,135,139,142,143,144,148,149}-*.md`
 
 ## Data plane
 
-1. **NACK receive** — Listeners send NACK datagrams via unicast UDP to
+1. **NACK receive**: listeners send NACK datagrams via unicast UDP to
    `retry-endpoint` nodes on `nack_port` (default 9300).
-2. **Cache lookup + rate limiting** — The retry-endpoint looks up the
+2. **Cache lookup + rate limiting**: the retry-endpoint looks up the
    requested frame and applies multi-tier rate limiting.
-3. **Response** — ACK if retransmit dispatched; MISS if not in cache
+3. **Response**: ACK if retransmit dispatched; MISS if not in cache
    (triggers listener escalation to the next endpoint).
-4. **Retransmission** — Cached frames are re-multicasted via UDP on
+4. **Retransmission**: cached frames are re-multicasted via UDP on
    `egress_port` (default 9001) to the fabric, where listeners receive them
    on their normal multicast path.
 

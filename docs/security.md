@@ -10,8 +10,8 @@ The retry-endpoint enforces a simplified perimeter (UDP-only, no BGP):
 
 This is enforced at two levels:
 
-1. **Cloud-level** (AWS SG, GCP firewall rules, etc.) — coarse-grained
-2. **Host-level** (nftables on Linux, pf on FreeBSD) — fine-grained
+1. **Cloud-level** (AWS SG, GCP firewall rules, etc.): coarse-grained
+2. **Host-level** (nftables on Linux, pf on FreeBSD): fine-grained
 
 Both must stay aligned.
 
@@ -43,7 +43,7 @@ Allowed from fabric interface:
 - ICMPv6 (NDP, MLD, diagnostics)
 - UDP/`egress_port` (9001) and UDP/`nack_port` (9300) to ff00::/8
   (re-multicast + beacon ADVERT)
-- Unicast UDP from source port `nack_port` (9300) — ACK/MISS responses
+- Unicast UDP from source port `nack_port` (9300): ACK/MISS responses
 
 Allowed from non-fabric interfaces:
 - ICMPv4
@@ -53,7 +53,7 @@ Allowed from non-fabric interfaces:
 
 ### Forward chain
 
-Always dropped — retry-endpoint does not route.
+Always dropped; retry-endpoint does not route.
 
 ## Management CIDRs
 
@@ -71,7 +71,7 @@ vars. Always set `mgmt_cidrs_*` on each host, not on the group.
 The AWS EC2 example creates a security group with rules that mirror the
 host-level rules:
 
-- Inbound UDP/9300 (NACK) from `fabric_source_cidrs_v6` (default `::/0` — tighten this)
+- Inbound UDP/9300 (NACK) from `fabric_source_cidrs_v6` (default `::/0`; tighten this)
 - Inbound TCP/22 from `ssh_allowed_cidrs`
 - Inbound TCP/9400 from `metrics_allowed_cidrs`
 - Outbound all (host-level nftables narrows further)

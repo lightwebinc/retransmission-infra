@@ -253,7 +253,7 @@ variable "retry_version" {
 variable "rl_chain_rate" {
   description = "Max NACKs per window per (srcIP, chainID)"
   type        = number
-  default     = 500
+  default     = 1000000
 }
 
 variable "rl_chain_window" {
@@ -265,25 +265,25 @@ variable "rl_chain_window" {
 variable "rl_group_burst" {
   description = "Burst size per (srcIP, groupIdx)"
   type        = number
-  default     = 50
+  default     = 20000
 }
 
 variable "rl_group_rate" {
   description = "Retransmits per second per (srcIP, groupIdx)"
   type        = number
-  default     = 200
+  default     = 20000
 }
 
 variable "rl_ip_burst" {
   description = "Per-IP burst"
   type        = number
-  default     = 100
+  default     = 20000
 }
 
 variable "rl_ip_rate" {
   description = "Per-IP rate limit (tokens/sec)"
   type        = number
-  default     = 1000
+  default     = 20000
 }
 
 variable "rl_sequence_max" {

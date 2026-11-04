@@ -88,14 +88,14 @@ dedup_window: "2s"            # Cross-instance retransmit dedup window; must be 
 cache_max_keys: 100000        # Maximum cache entries
 
 # Rate limiting
-rl_ip_rate: 1000              # Per-IP rate limit (tokens/sec, float)
-rl_ip_burst: 100              # Per-IP burst
-rl_chain_rate: 500            # Max NACKs per window per (srcIP, chainID)
+rl_ip_rate: 20000              # Per-IP rate limit (tokens/sec, float)
+rl_ip_burst: 20000              # Per-IP burst
+rl_chain_rate: 1000000            # Max NACKs per window per (srcIP, chainID)
 rl_chain_window: "1m"         # Sliding window for per-chain NACK limiter
 rl_sequence_max: 100          # Max requests per LookupSeq per sliding window
 rl_sequence_window: "1m"      # Per-LookupSeq sliding window
-rl_group_rate: 200            # Retransmits per second per (srcIP, groupIdx)
-rl_group_burst: 50            # Burst size per (srcIP, groupIdx)
+rl_group_rate: 20000            # Retransmits per second per (srcIP, groupIdx)
+rl_group_burst: 20000            # Burst size per (srcIP, groupIdx)
 rl_throttle_response: false   # Emit THROTTLED hint on seq/chain/group throttle (IP flood tier stays silent)
 
 # ------------------------------------------------------------

@@ -1,5 +1,5 @@
 # pf ruleset for retry-endpoint
-# Managed by Ansible — do not edit manually
+# Managed by Ansible; do not edit manually
 #
 # Simplified perimeter model (UDP-only, no BGP):
 #   * Fabric interface ({{ firewall_fabric_iface }}): frame + NACK receive, retransmit egress
@@ -67,4 +67,4 @@ pass out on ! $fabric_iface inet proto udp to any port { 53, 123 }
 pass out on ! $fabric_iface inet proto tcp to any port { 53, 80, 443 }
 
 # Forwarding is disabled via sysctl (net.inet6.ip6.forwarding=0);
-# pf has no forward direction — the default "block all" covers routed traffic.
+# pf has no forward direction: the default "block all" covers routed traffic.

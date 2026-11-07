@@ -99,7 +99,7 @@ resource "aws_security_group" "retry_endpoint_node" {
   tags = merge(local.common_tags, { Name = "${var.name_prefix}-sg" })
 }
 
-# NACK receive (UDP) — fabric is IPv6-only
+# NACK receive (UDP): fabric is IPv6-only
 resource "aws_vpc_security_group_ingress_rule" "nack_udp6" {
   for_each = toset(var.fabric_source_cidrs_v6)
 
@@ -154,14 +154,14 @@ resource "aws_vpc_security_group_ingress_rule" "metrics" {
 
 resource "aws_vpc_security_group_egress_rule" "all" {
   security_group_id = aws_security_group.retry_endpoint_node.id
-  description       = "Allow all outbound (IPv4) — host-level nftables/pf narrows further"
+  description       = "Allow all outbound (IPv4): host-level nftables/pf narrows further"
   ip_protocol       = "-1"
   cidr_ipv4         = "0.0.0.0/0"
 }
 
 resource "aws_vpc_security_group_egress_rule" "all6" {
   security_group_id = aws_security_group.retry_endpoint_node.id
-  description       = "Allow all outbound (IPv6) — host-level nftables/pf narrows further"
+  description       = "Allow all outbound (IPv6): host-level nftables/pf narrows further"
   ip_protocol       = "-1"
   cidr_ipv6         = "::/0"
 }

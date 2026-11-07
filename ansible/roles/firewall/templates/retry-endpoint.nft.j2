@@ -1,5 +1,5 @@
 # nftables ruleset for retry-endpoint
-# Managed by Ansible — do not edit manually
+# Managed by Ansible; do not edit manually
 #
 # Simplified perimeter model (UDP-only, no BGP):
 #   * Fabric interface ({{ firewall_fabric_iface }}):
@@ -41,7 +41,7 @@ table inet retry-endpoint {
         ct state invalid drop
         iifname "lo" accept
 
-        # ICMPv6 — NDP + MLD + diagnostics
+        # ICMPv6: NDP + MLD + diagnostics
         icmpv6 type {
             nd-neighbor-solicit, nd-neighbor-advert,
             nd-router-solicit, nd-router-advert,
@@ -51,13 +51,13 @@ table inet retry-endpoint {
             packet-too-big, parameter-problem, time-exceeded
         } accept
 
-        # ICMPv4 — minimal, non-fabric only
+        # ICMPv4: minimal, non-fabric only
         iifname != "{{ firewall_fabric_iface }}" ip protocol icmp icmp type { echo-request, echo-reply, destination-unreachable } accept
 
-        # Multicast frame ingress — fabric iface, multicast destination, listen_port
+        # Multicast frame ingress: fabric iface, multicast destination, listen_port
         iifname "{{ firewall_fabric_iface }}" ip6 daddr ff00::/8 udp dport {{ listen_port }} accept
 
-        # NACK request ingress — fabric iface, unicast UDP to nack_port
+        # NACK request ingress: fabric iface, unicast UDP to nack_port
         iifname "{{ firewall_fabric_iface }}" udp dport {{ nack_port }} accept
 
         # Management: SSH + metrics scrape, only from mgmt CIDRs, only on non-fabric
@@ -65,7 +65,7 @@ table inet retry-endpoint {
         iifname != "{{ firewall_fabric_iface }}" ip6 saddr @mgmt_allow_v6 tcp dport { 22, {{ firewall_metrics_port }} } accept
 
 {% if ingress_mode | default('ethernet') == 'gre' %}
-        # GRE outer-transport — inbound tunnel encapsulation from remote endpoint
+        # GRE outer-transport: inbound tunnel encapsulation from remote endpoint
 {% if gre_outer_proto | default('ipv6') == 'ipv4' and gre_remote_ip4 | default('') | length > 0 %}
         iifname != "{{ firewall_fabric_iface }}" ip  saddr {{ gre_remote_ip4 }} ip  protocol gre accept
 {% elif gre_remote_ip6 | default('') | length > 0 %}
@@ -95,18 +95,18 @@ table inet retry-endpoint {
         } accept
         oifname != "{{ firewall_fabric_iface }}" ip protocol icmp accept
 
-        # Retransmission egress — fabric iface, multicast UDP to listeners on
+        # Retransmission egress: fabric iface, multicast UDP to listeners on
         # egress_port.  Beacon ADVERT multicasts go to nack_port (control group).
         oifname "{{ firewall_fabric_iface }}" ip6 daddr ff00::/8 udp dport { {{ egress_port }}, {{ nack_port }} } accept
 
-        # Unicast ACK/MISS responses — sent from the NACK listening socket
+        # Unicast ACK/MISS responses: sent from the NACK listening socket
         # (source port = nack_port) back to the NACK originator.
         # Explicit rule avoids reliance on conntrack which is unreliable in
         # some environments (LXD VMs, certain kernel configs).
         oifname "{{ firewall_fabric_iface }}" udp sport {{ nack_port }} accept
 
 {% if ingress_mode | default('ethernet') == 'gre' %}
-        # GRE outer-transport — outbound tunnel encapsulation to remote endpoint
+        # GRE outer-transport: outbound tunnel encapsulation to remote endpoint
 {% if gre_outer_proto | default('ipv6') == 'ipv4' and gre_remote_ip4 | default('') | length > 0 %}
         oifname != "{{ firewall_fabric_iface }}" ip  daddr {{ gre_remote_ip4 }} ip  protocol gre accept
 {% elif gre_remote_ip6 | default('') | length > 0 %}
@@ -114,12 +114,12 @@ table inet retry-endpoint {
 {% endif %}
 {% endif %}
 
-        # DNS / NTP / package management — non-fabric only
+        # DNS / NTP / package management, non-fabric only
         oifname != "{{ firewall_fabric_iface }}" udp dport { 53, 123 } accept
         oifname != "{{ firewall_fabric_iface }}" tcp dport { 53, 80, 443 } accept
 
 {% if redis_addr | default('') | length > 0 %}
-        # Redis dedup/cache — outbound TCP to {{ redis_addr }} on management interface
+        # Redis dedup/cache: outbound TCP to {{ redis_addr }} on management interface
         oifname != "{{ firewall_fabric_iface }}" tcp dport {{ redis_addr.split(':') | last }} accept
 {% endif %}
 
@@ -127,7 +127,7 @@ table inet retry-endpoint {
     }
 
     # ------------------------------------------------------------
-    # Forward chain — always drop
+    # Forward chain: always drop
     # ------------------------------------------------------------
     chain forward {
         type filter hook forward priority 0; policy drop;

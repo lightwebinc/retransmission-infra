@@ -5,7 +5,7 @@
 
 # Security groups open to 0.0.0.0/0 and ::/0
 # - NACK UDP port must accept datagrams from fabric listeners; default ::/0
-#   until fabric_source_cidrs_v6 is tightened per deployment (no BGP here —
+#   until fabric_source_cidrs_v6 is tightened per deployment (no BGP here,
 #   retry endpoints are pure cache-and-retransmit services)
 # - All-egress rules are standard for outbound-unrestricted nodes
 AVD-AWS-0104

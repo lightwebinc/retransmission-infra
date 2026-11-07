@@ -123,14 +123,14 @@ by multicast, amplifying repair storms).
 | `cache_ttl_anchor` | `2m` | FrameVer V6 (BRC-134 anchor tx) cache TTL |
 | `dedup_window` | `2s` | Cross-instance retransmit dedup window; must be < NACK_BACKOFF_MAX (5s) so lost retransmits can be re-sent |
 | `cache_max_keys` | `100000` | Maximum cache entries |
-| `rl_ip_rate` | `1000` | Per-IP NACK rate limit |
-| `rl_ip_burst` | `100` | Per-IP burst |
-| `rl_chain_rate` | `500` | Max NACKs per window per (srcIP, chainID) |
+| `rl_ip_rate` | `20000` | Per-IP NACK rate limit. The `rl_*` defaults are sized for object planes (BRC-148/149: one object is thousands of fragments, so one listener's repair burst exceeds the binary's tx-only defaults); tighten on a fabric without an object plane |
+| `rl_ip_burst` | `20000` | Per-IP burst |
+| `rl_chain_rate` | `1000000` | Max NACKs per window per (srcIP, chainID) |
 | `rl_chain_window` | `1m` | Sliding window for per-chain NACK limiter |
 | `rl_sequence_max` | `100` | Max requests per LookupSeq per sliding window |
 | `rl_sequence_window` | `1m` | Per-LookupSeq sliding window |
-| `rl_group_rate` | `200` | Retransmits per second per (srcIP, groupIdx) |
-| `rl_group_burst` | `50` | Burst size per (srcIP, groupIdx) |
+| `rl_group_rate` | `20000` | Retransmits per second per (srcIP, groupIdx) |
+| `rl_group_burst` | `20000` | Burst size per (srcIP, groupIdx) |
 | `rl_throttle_response` | `false` | Emit THROTTLED hint on seq/chain/group throttle |
 
 ### BRC-126 cross-domain NACK relay (one-hop). OFF by default.

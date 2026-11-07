@@ -8,12 +8,12 @@
 # retry-endpoint source and build
 # ------------------------------------------------------------
 retry_repo: "https://github.com/lightwebinc/retry-endpoint.git"
-retry_version: "v1.15.0"      # release tag; override with "main" for lab builds from tip
+retry_version: "v1.16.0"      # release tag; override with "main" for lab builds from tip
 # NOTE: keep this at or above v1.9.5. Releases before it re-injected a proxied
 # cross-domain repair by MULTICAST regardless of the endpoint retransmit mode,
 # which is the amplifier behind the observed own-source repair storm.
 # The floor binds terraform too: keep
-# terraform/modules/retry-endpoint-node/variables.tf `retry_version` in step —
+# terraform/modules/retry-endpoint-node/variables.tf `retry_version` in step,
 # it is passed as --extra-vars and outranks this file, so a stale default there
 # reintroduces the amplifier this pin exists to prevent.
 retry_install_dir: "/opt/retry-endpoint"
@@ -27,7 +27,7 @@ retry_force_build: false
 
 # Go toolchain version (used when building from source)
 # Must be >= the `go` directive in retry-endpoint's go.mod at retry_version
-# (v1.15.0 requires 1.26.2); the service builds with golang:1.27 in its own CI.
+# (v1.16.0 requires 1.26.2); the service builds with golang:1.27 in its own CI.
 go_version: "1.27.3"
 go_install_dir: "/usr/local/go"
 
@@ -87,15 +87,18 @@ cache_ttl_anchor: "2m"        # FrameVer V6 (BRC-134 anchor tx) cache TTL
 dedup_window: "2s"            # Cross-instance retransmit dedup window; must be < NACK_BACKOFF_MAX (5s) so lost retransmits can be re-sent
 cache_max_keys: 100000        # Maximum cache entries
 
-# Rate limiting
-rl_ip_rate: 20000              # Per-IP rate limit (tokens/sec, float)
-rl_ip_burst: 20000              # Per-IP burst
-rl_chain_rate: 1000000            # Max NACKs per window per (srcIP, chainID)
+# Rate limiting. Sized for object planes (BRC-148/149): one large object is
+# thousands of fragments, so a single repair burst from one listener exceeds the
+# binary's own per-IP / per-chain / per-group defaults, which suit tx-only
+# fabrics. Tighten on a fabric that carries no object plane.
+rl_ip_rate: 20000             # Per-IP rate limit (tokens/sec, float)
+rl_ip_burst: 20000            # Per-IP burst
+rl_chain_rate: 1000000        # Max NACKs per window per (srcIP, chainID)
 rl_chain_window: "1m"         # Sliding window for per-chain NACK limiter
 rl_sequence_max: 100          # Max requests per LookupSeq per sliding window
 rl_sequence_window: "1m"      # Per-LookupSeq sliding window
-rl_group_rate: 20000            # Retransmits per second per (srcIP, groupIdx)
-rl_group_burst: 20000            # Burst size per (srcIP, groupIdx)
+rl_group_rate: 20000          # Retransmits per second per (srcIP, groupIdx)
+rl_group_burst: 20000         # Burst size per (srcIP, groupIdx)
 rl_throttle_response: false   # Emit THROTTLED hint on seq/chain/group throttle (IP flood tier stays silent)
 
 # ------------------------------------------------------------
@@ -103,7 +106,7 @@ rl_throttle_response: false   # Emit THROTTLED hint on seq/chain/group throttle 
 # Enable on an endpoint serving a downstream domain that cannot see the frames
 # it missed: on local cache miss it forwards the NACK upstream (Proxied flag,
 # so the upstream cannot re-proxy), re-caches the answer and retransmits it
-# locally. The tuning values are the binary's own defaults — override from a
+# locally. The tuning values are the binary's own defaults, override from a
 # MEASURED inter-fabric repair run, not by guesswork.
 # ------------------------------------------------------------
 proxy_enabled: false          # enable the one-hop relay
@@ -132,7 +135,7 @@ num_workers: 0               # 0 = runtime.NumCPU()
 metrics_addr: ":9400"         # Metrics endpoint
 otlp_endpoint: ""             # OTLP gRPC push; empty disables
 otlp_interval: "30s"          # OTLP metric export cadence
-# Unified logging — see https://github.com/lightwebinc/shard-common/blob/main/docs/logging.md
+# Unified logging: see https://github.com/lightwebinc/shard-common/blob/main/docs/logging.md
 log_format: "json"            # text | json (json for fleet aggregation)
 log_level: "info"             # debug|info|warn|error; runtime-togglable via POST /loglevel + SIGHUP
 trace_sampling: 0             # 0..1 trace head sampling (0 = off; exports via otlp_endpoint)

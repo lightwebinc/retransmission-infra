@@ -60,6 +60,15 @@
   register: retry_binary_stat
   when: retry_local_binary | default('') | length == 0
 
+- name: Read the Go version the existing binary was built with
+  ansible.builtin.command: "{{ go_install_dir }}/bin/go version {{ retry_install_dir }}/retry-endpoint"
+  register: retry_binary_go
+  changed_when: false
+  failed_when: false
+  when:
+    - retry_local_binary | default('') | length == 0
+    - retry_binary_stat.stat.exists
+
 - name: Build retry-endpoint binary
   ansible.builtin.command:
     # Folded scalar: the one-line form ran past the 160-char lint limit. Folding
@@ -80,7 +89,12 @@
   changed_when: true
   when:
     - retry_local_binary | default('') | length == 0
-    - not retry_binary_stat.stat.exists or (retry_force_build | default(false) | bool)
+    # A binary built with another Go release is rebuilt, so a toolchain move
+    # reaches a deployed node without retry_force_build.
+    - >-
+      not retry_binary_stat.stat.exists
+      or (retry_force_build | default(false) | bool)
+      or ('go' ~ go_version) not in (retry_binary_go.stdout | default(''))
 
 - name: Set ownership on pushed/built binary
   ansible.builtin.file:

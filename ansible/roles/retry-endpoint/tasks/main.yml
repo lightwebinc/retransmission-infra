@@ -94,6 +94,16 @@
     - retry_local_binary | default('') | length == 0
     - retry_binary_stat.stat.exists
 
+- name: Read the release the existing binary was built from
+  ansible.builtin.command: "cat {{ retry_install_dir }}/.built-ref"
+  register: retry_built_ref
+  changed_when: false
+  check_mode: false
+  failed_when: false
+  when:
+    - retry_local_binary | default('') | length == 0
+    - retry_binary_stat.stat.exists
+
 - name: Build retry-endpoint binary
   ansible.builtin.command:
     # Folded scalar: the one-line form ran past the 160-char lint limit. Folding
@@ -115,12 +125,23 @@
   changed_when: true
   when:
     - retry_local_binary | default('') | length == 0
-    # A binary built with another Go release is rebuilt, so a toolchain move
-    # reaches a deployed node without retry_force_build.
+    # A binary built with another Go release, or from another release of the
+    # source, is rebuilt: a toolchain move or a version pin move reaches a
+    # deployed node without retry_force_build.
     - >-
       not retry_binary_stat.stat.exists
       or (retry_force_build | default(false) | bool)
       or (retry_binary_go.stdout | default('')).split() | last | default('') != 'go' ~ go_version
+      or (retry_built_ref.stdout | default('')) | trim != retry_version
+
+- name: Record the release the binary was built from
+  ansible.builtin.copy:
+    content: "{{ retry_version }}\n"
+    dest: "{{ retry_install_dir }}/.built-ref"
+    owner: "{{ retry_user }}"
+    group: "{{ retry_group }}"
+    mode: "0644"
+  when: retry_local_binary | default('') | length == 0
 
 - name: Set ownership on pushed/built binary
   ansible.builtin.file:

@@ -38,6 +38,14 @@
   register: retry_clone
   when: retry_local_binary | default('') | length == 0
 
+# A pushed binary was not built here, so the build record goes first: a stop between the two
+# tasks then leaves no record beside a binary it does not describe.
+- name: Drop the build record for a pushed binary
+  ansible.builtin.file:
+    path: "{{ retry_install_dir }}/.built-ref"
+    state: absent
+  when: retry_local_binary | default('') | length > 0
+
 - name: Push pre-built retry-endpoint binary (skips git/build)
   ansible.builtin.copy:
     src: "{{ retry_local_binary }}"
@@ -45,13 +53,6 @@
     owner: "{{ retry_user }}"
     group: "{{ retry_group }}"
     mode: "0755"
-  when: retry_local_binary | default('') | length > 0
-
-# A pushed binary was not built here, so the build record no longer describes it.
-- name: Drop the build record for a pushed binary
-  ansible.builtin.file:
-    path: "{{ retry_install_dir }}/.built-ref"
-    state: absent
   when: retry_local_binary | default('') | length > 0
 
 - name: Set ownership of install directory after clone

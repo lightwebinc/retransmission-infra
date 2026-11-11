@@ -35,6 +35,7 @@
     dest: "{{ retry_install_dir }}"
     version: "{{ retry_version }}"
     force: false
+  register: retry_clone
   when: retry_local_binary | default('') | length == 0
 
 - name: Push pre-built retry-endpoint binary (skips git/build)
@@ -102,6 +103,7 @@
     - retry_binary_stat.stat.exists
 
 # A branch name stays the same while its commit moves, so the record carries both.
+# A dry run leaves the checkout alone: there the commit is the one the clone task predicts.
 - name: Read the checked-out commit
   ansible.builtin.command:
     cmd: git rev-parse HEAD
@@ -132,7 +134,8 @@
       {{ not retry_binary_stat.stat.exists
       or (retry_force_build | default(false) | bool)
       or (retry_binary_go.stdout | default('')).split() | last | default('') != 'go' ~ go_version
-      or (retry_built_ref.stdout | default('')) | trim != retry_version ~ ' ' ~ (retry_head.stdout | default('') | trim) }}
+      or (retry_built_ref.stdout | default('')) | trim != retry_version ~ ' ' ~
+      (retry_clone.after | default(retry_head.stdout | default(''), true) | trim) }}
   when: retry_local_binary | default('') | length == 0
 
 # Dropped first, so a run that stops between the build and the record rebuilds next time.
@@ -169,7 +172,7 @@
 
 - name: Record the release and commit the binary was built from
   ansible.builtin.copy:
-    content: "{{ retry_version }} {{ retry_head.stdout | default('') | trim }}\n"
+    content: "{{ retry_version }} {{ retry_clone.after | default(retry_head.stdout | default(''), true) | trim }}\n"
     dest: "{{ retry_install_dir }}/.built-ref"
     owner: "{{ retry_user }}"
     group: "{{ retry_group }}"

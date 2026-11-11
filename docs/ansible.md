@@ -79,7 +79,7 @@ by multicast, amplifying repair storms).
 | `retry_user` | `retry-endpoint` | Service user |
 | `retry_group` | `retry-endpoint` | Service group |
 | `retry_local_binary` | `""` | Pre-built local binary to push; empty = clone and build on the host |
-| `retry_force_build` | `false` | Rebuild even when a binary already exists |
+| `retry_force_build` | `false` | Rebuild even when a binary already exists (a source build made with another Go release than `go_version` is rebuilt; a `retry_local_binary` is installed as supplied) |
 | `go_version` | pinned in `group_vars/all.yml` | Go toolchain; must be at or above the `go` directive in the service go.mod at the pinned tag |
 | `go_install_dir` | `/usr/local/go` | Go toolchain install directory |
 

@@ -23,7 +23,7 @@ tail -f /var/log/retry_endpoint.log
 | `/etc/pf.d/retry-endpoint.conf` | pf rules, included from `/etc/pf.conf` |
 
 `/etc/rc.conf` also carries `ipv6_route_retry_mcast` (multicast route on the
-ingress interface).
+ingress interface, listed in `ipv6_static_routes` so a boot installs it).
 
 ## Diagnostics
 

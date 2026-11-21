@@ -42,7 +42,9 @@ gre_local_ip6: "2001:db8:a::10"
 gre_remote_ip6: "2001:db8:feed::1"
 ```
 
-Then set `mc_iface: gre6-retry` per-host in the inventory.
+Then set `mc_iface` and `ingress_iface` to the tunnel per-host in the
+inventory: `gre6-retry` on Linux, and `gif0` on FreeBSD, where the role always
+names the tunnel `gif0` and does not read `gre_iface`.
 
 ## Multicast routing
 
@@ -56,10 +58,13 @@ If `mc_route_prefix` is unset, it's auto-derived from `mc_scope`:
 | `org` | `ff08::/16` |
 | `global` | `ff0e::/16` |
 
-The `networking` role installs this route via:
+The `networking` role installs this route on `ingress_iface`:
 
-- **Linux**: `ip -6 route replace <prefix> dev <mc_iface>`
-- **FreeBSD**: `route add -inet6 -net <prefix> -interface <mc_iface>`
+- **Linux**: `ip -6 route replace <prefix> dev <ingress_iface>`
+- **FreeBSD**: `route add -inet6 -net <prefix> -interface <ingress_iface>`,
+  run after the `netif` restart. The route is also persisted as
+  `ipv6_route_retry_mcast` in `/etc/rc.conf` and listed in
+  `ipv6_static_routes`, so a boot installs it.
 
 ## Netplan (Ubuntu 24.04)
 
@@ -79,9 +84,11 @@ The `networking` role manages FreeBSD networking via `/etc/rc.conf`:
 - Enables IPv6 globally
 - Configures `ingress_iface` for IPv6 autoconfiguration
 - (Optional) Configures GRE (gif) tunnel when `ingress_mode=gre`
-- Adds persistent multicast route
+- Adds the multicast route (`ipv6_route_retry_mcast`) and lists `retry_mcast`
+  in `ipv6_static_routes` (names already listed stay), so a boot installs it
 
-Changes are applied via `service netif restart`.
+Changes are applied via `service netif restart`, which creates `gif0` in GRE
+mode; the live multicast route is added after the restart.
 
 ## Cache backend connectivity
 

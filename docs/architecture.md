@@ -72,7 +72,7 @@ a separate Redis connection is opened with the `bre:dedup:` key prefix
 - **Firewall** (nftables on Linux, pf on FreeBSD) enforces a simplified
   perimeter (UDP-only, no BGP). See `security.md`.
 
-## How this repo is organised
+## How this repo is organized
 
 | Layer     | Location     | Purpose                                     |
 | --------- | ------------ | ------------------------------------------- |

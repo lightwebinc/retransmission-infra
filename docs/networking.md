@@ -107,7 +107,7 @@ uses a **mesh or multicast heartbeat** (default multicast `239.1.99.222:9918`
 in the role's `aerospike.conf.j2`) on the node interconnect; keep it on the
 management segment, away from the BSV multicast groups. Aerospike TTL is
 whole-seconds (floor 1s); the retry-endpoint rounds up, and the namespace's
-`default-ttl` MUST stay `0` so client-supplied per-frame TTLs are honoured.
+`default-ttl` MUST stay `0` so client-supplied per-frame TTLs are honored.
 
 Backend outages fail open: the retry endpoint treats cache errors as misses and
 keeps serving, so a backend restart never blocks NACK handling.

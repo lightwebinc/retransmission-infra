@@ -6,7 +6,7 @@
 #
 # Note: TTL is whole-seconds in Aerospike (floor 1s); the retry-endpoint client
 # rounds up. aerospike_default_ttl MUST stay 0 so per-record (client-supplied)
-# TTLs are honoured.
+# TTLs are honored.
 
 - name: Download Aerospike CE package
   ansible.builtin.get_url:

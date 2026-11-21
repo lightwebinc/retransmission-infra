@@ -8,25 +8,25 @@ enable_firewall = true
 
 hosts = [
   {
-    name        = "retry-endpoint-01"
-    public_ip   = "203.0.113.50"
-    ssh_user    = "ubuntu"
-    ssh_key     = "~/.ssh/id_ed25519"
+    name      = "retry-endpoint-01"
+    public_ip = "203.0.113.50"
+    ssh_user  = "ubuntu"
+    ssh_key   = "~/.ssh/id_ed25519"
     # gre_local_ip6  = "2001:db8:a::10"   # local IPv6 endpoint for ip6gre
     # gre_inner_ipv6 = "fd00::10/64"       # inner address on tunnel interface
   },
   {
-    name        = "retry-endpoint-02"
-    public_ip   = "198.51.100.60"
-    ssh_user    = "freebsd"
-    ssh_key     = "~/.ssh/id_ed25519"
+    name      = "retry-endpoint-02"
+    public_ip = "198.51.100.60"
+    ssh_user  = "freebsd"
+    ssh_key   = "~/.ssh/id_ed25519"
   },
 ]
 
-ingress_iface   = "eth0"
-ingress_mode    = "ethernet"
+ingress_iface = "eth0"
+ingress_mode  = "ethernet"
 
-mgmt_cidrs_v4   = ["10.0.0.0/8"]
-mgmt_cidrs_v6   = []
+mgmt_cidrs_v4 = ["10.0.0.0/8"]
+mgmt_cidrs_v6 = []
 
-shard_bits      = 2
+shard_bits = 2

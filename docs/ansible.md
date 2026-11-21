@@ -116,7 +116,7 @@ by multicast, amplifying repair storms).
 | `aerospike_set` | `bre` | Aerospike set |
 | `cache_dial_timeout` | `1s` | Backend dial timeout |
 | `cache_op_timeout` | `1s` | Backend per-op timeout (fail-open on exceed; Aerospike TTL floor is 1s) |
-| `cache_ttl` | `60s` | Global fallback cache TTL; collapses per-FrameVer TTLs when explicitly set |
+| `cache_ttl` | `60s` | Fallback for per-FrameVer TTLs left unset; the role sets all four (`cache_ttl_tx`, `_block`, `_subtree`, `_anchor`), so it has no effect here |
 | `cache_ttl_tx` | `60s` | FrameVer V2 (BRC-124/128 regular tx) cache TTL |
 | `cache_ttl_block` | `10m` | FrameVer V4 (BRC-131 block control) cache TTL |
 | `cache_ttl_subtree` | `5m` | FrameVer V5 (BRC-132 subtree data) cache TTL |

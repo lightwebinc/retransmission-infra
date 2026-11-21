@@ -116,7 +116,7 @@ by multicast, amplifying repair storms).
 | `aerospike_set` | `bre` | Aerospike set |
 | `cache_dial_timeout` | `1s` | Backend dial timeout |
 | `cache_op_timeout` | `1s` | Backend per-op timeout (fail-open on exceed; Aerospike TTL floor is 1s) |
-| `cache_ttl` | `60s` | The service's fallback for a per-FrameVer TTL left unset; the role renders every one (`cache_ttl_tx`, `_block`, `_subtree`, `_anchor`, `_beef`), so it has no effect here. The template requires those variables: set a value rather than removing one |
+| `cache_ttl` | `60s` | The service's fallback for a tx, block, subtree or anchor TTL left unset; BEEF is outside it (its own default, 60s). The role renders `cache_ttl_tx`, `_block`, `_subtree` and `_anchor` from these variables, which the template requires, and `cache_ttl_beef` with a `60s` template default, so `cache_ttl` has no effect while those four are nonempty (an empty one is unset to the service, which then applies `cache_ttl`) |
 | `cache_ttl_tx` | `60s` | FrameVer V2 (BRC-124/128 regular tx) cache TTL |
 | `cache_ttl_block` | `10m` | FrameVer V4 (BRC-131 block control) cache TTL |
 | `cache_ttl_subtree` | `5m` | FrameVer V5 (BRC-132 subtree data) cache TTL |

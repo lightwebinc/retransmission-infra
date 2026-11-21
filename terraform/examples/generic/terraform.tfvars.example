@@ -1,5 +1,11 @@
 # Copy this file to terraform.tfvars and fill in your values.
 
+# Perimeter firewall (default on)
+enable_firewall = true
+
+# GRE6 tunnel (set ingress_mode = "gre" to use)
+# gre_remote_ip6 = "2001:db8:feed::1"
+
 hosts = [
   {
     name        = "retry-endpoint-01"
@@ -17,14 +23,10 @@ hosts = [
   },
 ]
 
-shard_bits      = 2
-ingress_mode    = "ethernet"
 ingress_iface   = "eth0"
+ingress_mode    = "ethernet"
 
-# Perimeter firewall (default on)
-enable_firewall = true
 mgmt_cidrs_v4   = ["10.0.0.0/8"]
 mgmt_cidrs_v6   = []
 
-# GRE6 tunnel (set ingress_mode = "gre" to use)
-# gre_remote_ip6 = "2001:db8:feed::1"
+shard_bits      = 2

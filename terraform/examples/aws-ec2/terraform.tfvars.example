@@ -1,34 +1,37 @@
 # Copy this file to terraform.tfvars and fill in your values.
 
-aws_region   = "us-east-1"
-name_prefix  = "retry-endpoint"
-environment  = "production"
-
-vpc_cidr           = "10.10.0.0/16"
+allocate_eips = false
 availability_zones = ["us-east-1a", "us-east-1b"]
+aws_region   = "us-east-1"
 
-instance_count  = 2
-instance_type   = "t3.medium"
-key_name        = "my-ec2-keypair"
-ssh_private_key = "~/.ssh/id_ed25519"
+# Host-level perimeter firewall (default on)
+enable_firewall = true
 
-ssh_allowed_cidrs     = ["0.0.0.0/0"]   # Tighten for production
-metrics_allowed_cidrs = ["0.0.0.0/0"]
+environment  = "production"
 
 # Fabric sources (NACK senders): fabric is IPv6-only; tighten to your fabric CIDRs
 fabric_source_cidrs_v6 = ["::/0"]
 
-allocate_eips = false
-
-# Retry-endpoint
-nack_port       = 9300
-shard_bits      = 2
-ingress_mode    = "ethernet"
-ingress_iface   = "eth0"
-
-# Host-level perimeter firewall (default on)
-enable_firewall = true
-mgmt_cidrs_v6   = []
-
 # GRE6 tunnel (set ingress_mode = "gre" to use)
 # gre_remote_ip6 = "2001:db8:feed::1"
+
+# Retry-endpoint
+ingress_iface   = "eth0"
+ingress_mode    = "ethernet"
+
+instance_count  = 2
+instance_type   = "t3.medium"
+key_name        = "my-ec2-keypair"
+metrics_allowed_cidrs = ["0.0.0.0/0"]
+
+mgmt_cidrs_v6   = []
+
+nack_port       = 9300
+
+name_prefix  = "retry-endpoint"
+
+shard_bits      = 2
+
+ssh_allowed_cidrs     = ["0.0.0.0/0"]   # Tighten for production
+ssh_private_key = "~/.ssh/id_ed25519"
+vpc_cidr           = "10.10.0.0/16"

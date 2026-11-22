@@ -145,7 +145,7 @@ working.
 | `cache_max_bytes` | `""` | CACHE_MAX_BYTES: memory backend byte cap (binary default 0 = no limit); not read when `cache_arena_bytes` is set |
 | `control_group_compat` | `""` | CONTROL_GROUP_COMPAT: asm-only (binary default) \| both \| derived; prefix of the BRC-129 0xFFFD groups advertised into |
 | `dedup_breaker_window` | `""` | DEDUP_BREAKER_WINDOW: after a dedup claim fails, skip claims this long (the frame goes out at once); `0s` = no breaker (binary default 5s). Read by binaries with lightwebinc/retry-endpoint#47; the pinned `retry_version` v1.20.2 ignores it |
-| `dedup_claim_timeout` | `""` | DEDUP_CLAIM_TIMEOUT: how long a cross-instance dedup claim may wait on the backend before it fails open; must be > 0, the binary refuses `0s` (binary default 25ms). Read by binaries with lightwebinc/retry-endpoint#47; the pinned `retry_version` v1.20.2 ignores it |
+| `dedup_claim_timeout` | `""` | DEDUP_CLAIM_TIMEOUT: how long a cross-instance dedup claim may wait on the backend before it fails open; must be > 0, the binary refuses `0s` (binary default 25ms). It applies only while it is shorter than `cache_op_timeout` and the claims get a backend client of their own; otherwise they share the frame client and wait up to `cache_op_timeout` (logged at startup). Read by binaries with lightwebinc/retry-endpoint#47; the pinned `retry_version` v1.20.2 ignores it |
 | `retry_ingress_gro` | `false` | INGRESS_GRO: UDP_GRO on each multicast ingress socket (Linux; a kernel without it is logged) |
 | `retry_ingress_procs` | `""` | INGRESS_PROCS: processing goroutines per ingress socket (binary default 4) |
 | `retry_ingress_queue_depth` | `""` | INGRESS_QUEUE_DEPTH: datagrams queued between receive loop and processors (binary default 1024) |

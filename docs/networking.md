@@ -97,8 +97,11 @@ Changes are applied by restarting only the changed interface, by name
 (`service netif restart gif0` in GRE mode, which creates it, or the ingress
 interface in ethernet mode), when its configuration above changed or `gif0` is
 missing: a converge that changes nothing leaves `gif0`, the retry endpoint
-bound to it and every other interface alone. The live multicast route is added
-after the restart.
+bound to it and every other interface alone. What each restart applied is
+recorded in `/var/db/retry-endpoint-netif.json`, so a converge stopped between
+its rc.conf writes and the restart is finished by the next one; the first
+converge on a host without that record restarts the interface once. The live
+multicast route is added after the restart.
 
 ## Cache backend connectivity
 

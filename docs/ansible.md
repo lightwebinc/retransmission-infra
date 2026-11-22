@@ -100,7 +100,7 @@ by multicast, amplifying repair storms).
 | `beef_shard_bits` | `0` |  |
 | `cache_ttl_beef` | `60s` |  |
 | `shard_bits` | `2` | Must match fabric |
-| `mc_scope` | `site` | link \| site \| org \| global (link: refused on FreeBSD, which reserves ff02::/16) |
+| `mc_scope` | `site` | link \| site \| org \| global (link: no route on FreeBSD, which reserves ff02::/16; sending relies on `IPV6_MULTICAST_IF`, and the run warns) |
 | `mc_group_id` | `0x000B` | IANA group-id (default 0x000B = IANA Bitcoin) |
 | `source_mode` | `ssm` | Default (`bind_source` is required and `ssm_publishers_static` lists the publishers to (S,G)-join); `asm` is the lab fallback |
 | `bind_source` | `""` | per-node source address; REQUIRED when source_mode=ssm |

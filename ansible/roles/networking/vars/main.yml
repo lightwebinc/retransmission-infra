@@ -21,6 +21,13 @@ networking_netif_desired: >-
         else ('ethernet ' ~ ((ingress_dhcp4 | default(true)) | bool | ternary('DHCP', 'up')))} }}
 networking_netif_state_file: /var/db/retry-endpoint-netif.json
 
+# FreeBSD: the multicast route resolves to ff02::/16, which rc.d/routing reserves
+# with a reject route at every boot ("ff02::/16 ::1 -reject"), so no route for it
+# can be installed. Compared by value: a /16 is fixed by its first group, so any
+# spelling of ff02::/16 counts, and a narrower ff02 prefix does not.
+networking_mc_route_link: >-
+  {{ (networking_mc_route_prefix | trim | lower) is match('^ff02:[0-9a-f:.]*/0*16$') }}
+
 # Auto-derive multicast route prefix from mc_scope if mc_route_prefix is not set.
 # `mc_route_prefix` is optional: default to '' to keep the ternary safe.
 networking_mc_route_prefix: >-

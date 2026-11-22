@@ -58,10 +58,16 @@ If `mc_route_prefix` is unset, it's auto-derived from `mc_scope`:
 | `org` | `ff08::/16` |
 | `global` | `ff0e::/16` |
 
-`link` is refused on FreeBSD hosts: FreeBSD reserves `ff02::/16` (at boot
-`rc.d/routing` installs `ff02::/16 ::1 -reject`), so a link-scope multicast
-route can never be installed there, and `site.yml` fails before any role
-changes the host. The same applies to an `mc_route_prefix` of `ff02::/16` in any spelling.
+On FreeBSD hosts `link` installs no multicast route: FreeBSD reserves
+`ff02::/16` (at boot `rc.d/routing` installs `ff02::/16 ::1 -reject`), so a
+route for it can never be installed. Sending does not need one: the
+retry-endpoint sets `IPV6_MULTICAST_IF` on `egress_iface` for its
+retransmissions and beacons, and FreeBSD then picks that interface without a
+route lookup (`ip6_output()`, `in6_src.c` `selectroute()`), so a
+single-segment link-scope fabric works. The role skips the route, removes a
+route line an earlier converge wrote for another scope, and prints a warning;
+a sender that does not set `IPV6_MULTICAST_IF` hits the reject route. The
+same applies to an `mc_route_prefix` of `ff02::/16` in any spelling.
 
 The `networking` role installs this route on `ingress_iface`:
 

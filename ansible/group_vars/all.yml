@@ -55,7 +55,7 @@ cache_ttl_beef: "60s"
 
 # Multicast configuration
 shard_bits: 2
-mc_scope: "site"              # link | site | org | global (link: refused on FreeBSD, which reserves ff02::/16)
+mc_scope: "site"              # link | site | org | global (link: no route on FreeBSD, which reserves ff02::/16; sending relies on IPV6_MULTICAST_IF)
 mc_group_id: "0x000B"              # IANA group-id (default 0x000B = IANA Bitcoin)
 
 # Addressing model. ssm (FF3x, RFC 4607) is the fabric's first-class mode and

@@ -13,7 +13,7 @@ hosts = [
     ssh_user  = "ubuntu"
     ssh_key   = "~/.ssh/id_ed25519"
     # gre_local_ip6  = "2001:db8:a::10"   # local IPv6 endpoint for ip6gre
-    # gre_inner_ipv6 = "fd00::10/64"       # inner address on tunnel interface
+    # gre_inner_ipv6 = "2001:db8:2::10/64" # inner address on tunnel interface
   },
   {
     name      = "retry-endpoint-02"

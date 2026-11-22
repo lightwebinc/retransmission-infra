@@ -47,14 +47,14 @@ jobs:
           cat > /tmp/fw-check/vars.yml <<'EOF'
           firewall_fabric_iface: eth0
           firewall_metrics_port: "9400"
-          firewall_retry_endpoint_hosts: ["fd00:2::10"]
+          firewall_retry_endpoint_hosts: ["2001:db8:2::10"]
           firewall_upstream_retry_hosts: []
           listen_port: 9001
           egress_port: 9001
           beacon_port: 9300
           nack_port: 9300
           mgmt_cidrs_v4: ["10.0.0.0/8"]
-          mgmt_cidrs_v6: ["fd00:1::/64"]
+          mgmt_cidrs_v6: ["2001:db8:1::/64"]
           enable_bgp: false
           EOF
           cat > /tmp/fw-check/render.yml <<EOF

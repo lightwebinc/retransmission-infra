@@ -37,7 +37,7 @@ Configuration (in `ansible/group_vars/all.yml`):
 ingress_mode: "gre"
 gre_outer_proto: "ipv6"  # or "ipv4"
 gre_iface: "gre6-retry"
-gre_inner_ipv6: "fd00::10/64"
+gre_inner_ipv6: "2001:db8:2::10/64"
 gre_local_ip6: "2001:db8:a::10"
 gre_remote_ip6: "2001:db8:feed::1"
 ```
@@ -57,6 +57,11 @@ If `mc_route_prefix` is unset, it's auto-derived from `mc_scope`:
 | `site` | `ff05::/16` |
 | `org` | `ff08::/16` |
 | `global` | `ff0e::/16` |
+
+`link` is refused on FreeBSD hosts: FreeBSD reserves `ff02::/16` (at boot
+`rc.d/routing` installs `ff02::/16 ::1 -reject`), so a link-scope multicast
+route can never be installed there, and `site.yml` fails before any role
+changes the host. The same applies to `mc_route_prefix: "ff02::/16"`.
 
 The `networking` role installs this route on `ingress_iface`:
 
@@ -83,12 +88,15 @@ The `networking` role manages FreeBSD networking via `/etc/rc.conf`:
 
 - Enables IPv6 globally
 - Configures `ingress_iface` for IPv6 autoconfiguration
-- (Optional) Configures GRE (gif) tunnel when `ingress_mode=gre`
+- (Optional) Configures GRE (gif) tunnel when `ingress_mode=gre`, adding
+  `gif0` to `cloned_interfaces` (interfaces already listed stay)
 - Adds the multicast route (`ipv6_route_retry_mcast`) and lists `retry_mcast`
   in `ipv6_static_routes` (names already listed stay), so a boot installs it
 
 Changes are applied via `service netif restart`, which creates `gif0` in GRE
-mode; the live multicast route is added after the restart.
+mode, only when the interface configuration above changed: a converge that
+changes nothing leaves `gif0`, and the retry endpoint bound to it, alone. The
+live multicast route is added after the restart.
 
 ## Cache backend connectivity
 

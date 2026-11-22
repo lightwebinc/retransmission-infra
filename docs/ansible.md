@@ -100,7 +100,7 @@ by multicast, amplifying repair storms).
 | `beef_shard_bits` | `0` |  |
 | `cache_ttl_beef` | `60s` |  |
 | `shard_bits` | `2` | Must match fabric |
-| `mc_scope` | `site` | link \| site \| org \| global |
+| `mc_scope` | `site` | link \| site \| org \| global (link: refused on FreeBSD, which reserves ff02::/16) |
 | `mc_group_id` | `0x000B` | IANA group-id (default 0x000B = IANA Bitcoin) |
 | `source_mode` | `ssm` | Default (`bind_source` is required and `ssm_publishers_static` lists the publishers to (S,G)-join); `asm` is the lab fallback |
 | `bind_source` | `""` | per-node source address; REQUIRED when source_mode=ssm |
@@ -132,6 +132,23 @@ by multicast, amplifying repair storms).
 | `rl_group_rate` | `20000` | Retransmits per second per (srcIP, groupIdx) |
 | `rl_group_burst` | `20000` | Burst size per (srcIP, groupIdx) |
 | `rl_throttle_response` | `false` | Emit THROTTLED hint on seq/chain/group throttle |
+
+### Optional binary flags
+
+Each renders only when set: `""` (or `false`) passes nothing, so the binary
+default applies and an older binary keeps working.
+
+| Variable | Default | Notes |
+|---|---|---|
+| `cache_arena_bytes` | `""` | CACHE_ARENA_BYTES: memory backend: one block of this many bytes, allocated at start, is the byte cap (binary default 0 = per fragment) |
+| `cache_max_bytes` | `""` | CACHE_MAX_BYTES: memory backend byte cap (binary default 0 = no limit); not read when `cache_arena_bytes` is set |
+| `control_group_compat` | `""` | CONTROL_GROUP_COMPAT: asm-only (binary default) \| both \| derived; prefix of the BRC-129 0xFFFD groups advertised into |
+| `retry_ingress_gro` | `false` | INGRESS_GRO: UDP_GRO on each multicast ingress socket (Linux; a kernel without it is logged) |
+| `retry_ingress_procs` | `""` | INGRESS_PROCS: processing goroutines per ingress socket (binary default 4) |
+| `retry_ingress_queue_depth` | `""` | INGRESS_QUEUE_DEPTH: datagrams queued between receive loop and processors (binary default 1024) |
+| `retry_ingress_recv_buf_bytes` | `""` | INGRESS_RECV_BUF_BYTES: SO_RCVBUF per ingress socket (binary default 64 MiB, clamped by net.core.rmem_max) |
+| `retry_ingress_workers` | `""` | INGRESS_WORKERS: multicast ingress workers, each joining every Nth group on its own socket (binary default 1) |
+| `retry_pprof_listen` | `""` | PPROF_LISTEN: loopback address serving net/http/pprof, e.g. "127.0.0.1:6071" (empty = off) |
 
 ### BRC-126 cross-domain NACK relay (one-hop). OFF by default.
 

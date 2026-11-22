@@ -55,7 +55,7 @@ cache_ttl_beef: "60s"
 
 # Multicast configuration
 shard_bits: 2
-mc_scope: "site"              # link | site | org | global
+mc_scope: "site"              # link | site | org | global (link: no route on FreeBSD, which reserves ff02::/16; sending relies on IPV6_MULTICAST_IF)
 mc_group_id: "0x000B"              # IANA group-id (default 0x000B = IANA Bitcoin)
 
 # Addressing model. ssm (FF3x, RFC 4607) is the fabric's first-class mode and
@@ -100,6 +100,23 @@ rl_sequence_window: "1m"      # Per-LookupSeq sliding window
 rl_group_rate: 20000          # Retransmits per second per (srcIP, groupIdx)
 rl_group_burst: 20000         # Burst size per (srcIP, groupIdx)
 rl_throttle_response: false   # Emit THROTTLED hint on seq/chain/group throttle (IP flood tier stays silent)
+
+# Optional binary flags. Each renders only when set: "", null or false passes
+# nothing (a number, 0 included, renders), so the binary default applies and an
+# older binary keeps working.
+cache_arena_bytes: ""         # CACHE_ARENA_BYTES: memory backend: one block of this many bytes, allocated at start, is the byte cap (default 0 = per fragment)
+cache_max_bytes: ""           # CACHE_MAX_BYTES: memory backend byte cap (default 0 = no limit); not read when cache_arena_bytes is set
+control_group_compat: ""      # CONTROL_GROUP_COMPAT: asm-only (default) | both | derived; prefix of the BRC-129 0xFFFD groups advertised into
+# DEDUP_BREAKER_WINDOW and DEDUP_CLAIM_TIMEOUT come with lightwebinc/retry-endpoint#47:
+# a binary built without it, the pinned retry_version v1.20.2 included, ignores both.
+dedup_breaker_window: ""      # DEDUP_BREAKER_WINDOW: after a dedup claim fails, skip claims this long (fail open at once); "0s" = no breaker (default 5s)
+dedup_claim_timeout: ""       # DEDUP_CLAIM_TIMEOUT: how long a dedup claim may wait on the backend before it fails open; must be > 0 (default 25ms)
+retry_ingress_gro: false      # INGRESS_GRO: UDP_GRO on each multicast ingress socket (Linux; a kernel without it is logged)
+retry_ingress_procs: ""       # INGRESS_PROCS: processing goroutines per ingress socket (default 4)
+retry_ingress_queue_depth: ""  # INGRESS_QUEUE_DEPTH: datagrams queued between receive loop and processors (default 1024)
+retry_ingress_recv_buf_bytes: ""  # INGRESS_RECV_BUF_BYTES: SO_RCVBUF per ingress socket (default 64 MiB, clamped by net.core.rmem_max)
+retry_ingress_workers: ""     # INGRESS_WORKERS: multicast ingress workers, each joining every Nth group on its own socket (default 1)
+retry_pprof_listen: ""        # PPROF_LISTEN: loopback address serving net/http/pprof, e.g. "127.0.0.1:6071" (empty = off)
 
 # ------------------------------------------------------------
 # BRC-126 cross-domain NACK relay (one-hop). OFF by default.

@@ -100,7 +100,7 @@ by multicast, amplifying repair storms).
 | `beef_shard_bits` | `0` |  |
 | `cache_ttl_beef` | `60s` |  |
 | `shard_bits` | `2` | Must match fabric |
-| `mc_scope` | `site` | link \| site \| org \| global |
+| `mc_scope` | `site` | link \| site \| org \| global (link: no route on FreeBSD, which reserves ff02::/16; sending relies on `IPV6_MULTICAST_IF`, and the run warns) |
 | `mc_group_id` | `0x000B` | IANA group-id (default 0x000B = IANA Bitcoin) |
 | `source_mode` | `ssm` | Default (`bind_source` is required and `ssm_publishers_static` lists the publishers to (S,G)-join); `asm` is the lab fallback |
 | `bind_source` | `""` | per-node source address; REQUIRED when source_mode=ssm |
@@ -132,6 +132,26 @@ by multicast, amplifying repair storms).
 | `rl_group_rate` | `20000` | Retransmits per second per (srcIP, groupIdx) |
 | `rl_group_burst` | `20000` | Burst size per (srcIP, groupIdx) |
 | `rl_throttle_response` | `false` | Emit THROTTLED hint on seq/chain/group throttle |
+
+### Optional binary flags
+
+Each renders only when set: `""`, null or `false` passes nothing (a number,
+`0` included, renders), so the binary default applies and an older binary keeps
+working.
+
+| Variable | Default | Notes |
+|---|---|---|
+| `cache_arena_bytes` | `""` | CACHE_ARENA_BYTES: memory backend: one block of this many bytes, allocated at start, is the byte cap (binary default 0 = per fragment) |
+| `cache_max_bytes` | `""` | CACHE_MAX_BYTES: memory backend byte cap (binary default 0 = no limit); not read when `cache_arena_bytes` is set |
+| `control_group_compat` | `""` | CONTROL_GROUP_COMPAT: asm-only (binary default) \| both \| derived; prefix of the BRC-129 0xFFFD groups advertised into |
+| `dedup_breaker_window` | `""` | DEDUP_BREAKER_WINDOW: after a dedup claim fails, skip claims this long (the frame goes out at once); `0s` = no breaker (binary default 5s). Read by binaries with lightwebinc/retry-endpoint#47; the pinned `retry_version` v1.20.2 ignores it |
+| `dedup_claim_timeout` | `""` | DEDUP_CLAIM_TIMEOUT: how long a cross-instance dedup claim may wait on the backend before it fails open; must be > 0, the binary refuses `0s` (binary default 25ms). With `cache_backend` redis or aerospike it applies only while it is shorter than `cache_op_timeout` and the claims get a client of their own; otherwise they share the frame client and wait up to `cache_op_timeout` (logged at startup). With `memory` the claims need `redis_addr` and always use this timeout on that Redis client; if the client cannot be opened, cross-instance dedup is off (logged). Read by binaries with lightwebinc/retry-endpoint#47; the pinned `retry_version` v1.20.2 ignores it |
+| `retry_ingress_gro` | `false` | INGRESS_GRO: UDP_GRO on each multicast ingress socket (Linux; a kernel without it is logged) |
+| `retry_ingress_procs` | `""` | INGRESS_PROCS: processing goroutines per ingress socket (binary default 4) |
+| `retry_ingress_queue_depth` | `""` | INGRESS_QUEUE_DEPTH: datagrams queued between receive loop and processors (binary default 1024) |
+| `retry_ingress_recv_buf_bytes` | `""` | INGRESS_RECV_BUF_BYTES: SO_RCVBUF per ingress socket (binary default 64 MiB, clamped by net.core.rmem_max) |
+| `retry_ingress_workers` | `""` | INGRESS_WORKERS: multicast ingress workers, each joining every Nth group on its own socket (binary default 1) |
+| `retry_pprof_listen` | `""` | PPROF_LISTEN: loopback address serving net/http/pprof, e.g. "127.0.0.1:6071" (empty = off) |
 
 ### BRC-126 cross-domain NACK relay (one-hop). OFF by default.
 

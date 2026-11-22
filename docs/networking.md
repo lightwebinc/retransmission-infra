@@ -37,7 +37,7 @@ Configuration (in `ansible/group_vars/all.yml`):
 ingress_mode: "gre"
 gre_outer_proto: "ipv6"  # or "ipv4"
 gre_iface: "gre6-retry"
-gre_inner_ipv6: "fd00::10/64"
+gre_inner_ipv6: "2001:db8:2::10/64"
 gre_local_ip6: "2001:db8:a::10"
 gre_remote_ip6: "2001:db8:feed::1"
 ```
@@ -58,11 +58,25 @@ If `mc_route_prefix` is unset, it's auto-derived from `mc_scope`:
 | `org` | `ff08::/16` |
 | `global` | `ff0e::/16` |
 
+On FreeBSD hosts `link` installs no multicast route: FreeBSD reserves
+`ff02::/16` (at boot `rc.d/routing` installs `ff02::/16 ::1 -reject`), so a
+route for it can never be installed. Sending does not need one: the
+retry-endpoint sets `IPV6_MULTICAST_IF` on `egress_iface` for its
+retransmissions and beacons, and FreeBSD then picks that interface without a
+route lookup (`ip6_output()`, `in6_src.c` `selectroute()`), so a
+single-segment link-scope fabric works. The role skips the route, removes a
+route line an earlier converge wrote for another scope, and prints a warning;
+a sender that does not set `IPV6_MULTICAST_IF` hits the reject route. The
+same applies to an `mc_route_prefix` of `ff02::/16` in any spelling.
+
 The `networking` role installs this route on `ingress_iface`:
 
 - **Linux**: `ip -6 route replace <prefix> dev <ingress_iface>`
 - **FreeBSD**: `route add -inet6 -net <prefix> -interface <ingress_iface>`,
-  run after the `netif` restart. The route is also persisted as
+  run after any interface restart; a route for the prefix that already goes
+  through another interface (`ingress_iface` or `ingress_mode` changed while
+  the old interface stays up) is moved there with `route change`. The route
+  is also persisted as
   `ipv6_route_retry_mcast` in `/etc/rc.conf` and listed in
   `ipv6_static_routes`, so a boot installs it.
 
@@ -83,12 +97,28 @@ The `networking` role manages FreeBSD networking via `/etc/rc.conf`:
 
 - Enables IPv6 globally
 - Configures `ingress_iface` for IPv6 autoconfiguration
-- (Optional) Configures GRE (gif) tunnel when `ingress_mode=gre`
+- (Optional) Configures GRE (gif) tunnel when `ingress_mode=gre`, adding
+  `gif0` to `cloned_interfaces` (interfaces already listed stay)
 - Adds the multicast route (`ipv6_route_retry_mcast`) and lists `retry_mcast`
   in `ipv6_static_routes` (names already listed stay), so a boot installs it
 
-Changes are applied via `service netif restart`, which creates `gif0` in GRE
-mode; the live multicast route is added after the restart.
+Changes are applied by restarting only the changed interface, by name (`service
+netif restart gif0` in GRE mode, which creates it, or the ingress interface in
+ethernet mode), when its configuration above changed or `gif0` does not run it:
+a converge that changes nothing leaves `gif0`, the retry endpoint bound to it
+and every other interface alone. What each converge applied is recorded in
+`/var/db/retry-endpoint-netif.json`, so a converge stopped between its rc.conf
+writes and the restart is finished by the next one. A host without that record
+(the first converge with this role) restarts the interface only when it fails
+its live check (`gif0` not up with its tunnel and inner address; the ingress
+interface down, or its rc.conf lines changed by this converge), so a node an
+earlier version set up keeps running untouched.
+Every converge also
+compares the running `gif0` with its configuration (up, tunnel endpoints and
+inner address, by value) and restarts it when they differ; after a restart it
+stops with an error if they still differ, because `service netif restart` exits
+0 even when an `ifconfig` it runs fails. The live multicast route is added
+after the restart.
 
 ## Cache backend connectivity
 

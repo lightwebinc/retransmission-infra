@@ -144,6 +144,8 @@ working.
 | `cache_arena_bytes` | `""` | CACHE_ARENA_BYTES: memory backend: one block of this many bytes, allocated at start, is the byte cap (binary default 0 = per fragment) |
 | `cache_max_bytes` | `""` | CACHE_MAX_BYTES: memory backend byte cap (binary default 0 = no limit); not read when `cache_arena_bytes` is set |
 | `control_group_compat` | `""` | CONTROL_GROUP_COMPAT: asm-only (binary default) \| both \| derived; prefix of the BRC-129 0xFFFD groups advertised into |
+| `dedup_breaker_window` | `""` | DEDUP_BREAKER_WINDOW: after a dedup claim fails, skip claims this long (the frame goes out at once); `0s` = no breaker (binary default 5s) |
+| `dedup_claim_timeout` | `""` | DEDUP_CLAIM_TIMEOUT: how long a cross-instance dedup claim may wait on the backend before it fails open; must be > 0, the binary refuses `0s` (binary default 25ms) |
 | `retry_ingress_gro` | `false` | INGRESS_GRO: UDP_GRO on each multicast ingress socket (Linux; a kernel without it is logged) |
 | `retry_ingress_procs` | `""` | INGRESS_PROCS: processing goroutines per ingress socket (binary default 4) |
 | `retry_ingress_queue_depth` | `""` | INGRESS_QUEUE_DEPTH: datagrams queued between receive loop and processors (binary default 1024) |

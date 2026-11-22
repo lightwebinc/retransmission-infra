@@ -13,7 +13,7 @@ networking_gre_tunnel: >-
 
 # FreeBSD: per interface, the settings this role writes to rc.conf for it. A
 # restart applies them, and networking_netif_state_file records what the last
-# successful restart applied: an interface whose entry differs is restarted.
+# successful converge applied: an interface whose entry differs is restarted.
 networking_netif_desired: >-
   {{ {networking_data_iface:
         ('gre ' ~ (networking_gre_tunnel | join(' ')) ~ ' ' ~ gre_inner_ipv6)

@@ -135,8 +135,9 @@ by multicast, amplifying repair storms).
 
 ### Optional binary flags
 
-Each renders only when set: `""` (or `false`) passes nothing, so the binary
-default applies and an older binary keeps working.
+Each renders only when set: `""`, null or `false` passes nothing (a number,
+`0` included, renders), so the binary default applies and an older binary keeps
+working.
 
 | Variable | Default | Notes |
 |---|---|---|

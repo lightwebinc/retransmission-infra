@@ -2,6 +2,10 @@
 # Derived facts for networking role
 networking_ingress_iface: "{{ ingress_iface if ingress_iface is string else ingress_iface[0] }}"
 
+# FreeBSD: the interface the role configures and restarts when that changes.
+# GRE mode always names the tunnel gif0.
+networking_data_iface: "{{ 'gif0' if ingress_mode == 'gre' else networking_ingress_iface }}"
+
 # Auto-derive multicast route prefix from mc_scope if mc_route_prefix is not set.
 # `mc_route_prefix` is optional: default to '' to keep the ternary safe.
 networking_mc_route_prefix: >-

@@ -61,13 +61,13 @@ If `mc_route_prefix` is unset, it's auto-derived from `mc_scope`:
 `link` is refused on FreeBSD hosts: FreeBSD reserves `ff02::/16` (at boot
 `rc.d/routing` installs `ff02::/16 ::1 -reject`), so a link-scope multicast
 route can never be installed there, and `site.yml` fails before any role
-changes the host. The same applies to `mc_route_prefix: "ff02::/16"`.
+changes the host. The same applies to an `mc_route_prefix` of `ff02::/16` in any spelling.
 
 The `networking` role installs this route on `ingress_iface`:
 
 - **Linux**: `ip -6 route replace <prefix> dev <ingress_iface>`
 - **FreeBSD**: `route add -inet6 -net <prefix> -interface <ingress_iface>`,
-  run after the `netif` restart. The route is also persisted as
+  run after any interface restart. The route is also persisted as
   `ipv6_route_retry_mcast` in `/etc/rc.conf` and listed in
   `ipv6_static_routes`, so a boot installs it.
 
@@ -93,10 +93,12 @@ The `networking` role manages FreeBSD networking via `/etc/rc.conf`:
 - Adds the multicast route (`ipv6_route_retry_mcast`) and lists `retry_mcast`
   in `ipv6_static_routes` (names already listed stay), so a boot installs it
 
-Changes are applied via `service netif restart`, which creates `gif0` in GRE
-mode, only when the interface configuration above changed: a converge that
-changes nothing leaves `gif0`, and the retry endpoint bound to it, alone. The
-live multicast route is added after the restart.
+Changes are applied by restarting only the changed interface, by name
+(`service netif restart gif0` in GRE mode, which creates it, or the ingress
+interface in ethernet mode), when its configuration above changed or `gif0` is
+missing: a converge that changes nothing leaves `gif0`, the retry endpoint
+bound to it and every other interface alone. The live multicast route is added
+after the restart.
 
 ## Cache backend connectivity
 

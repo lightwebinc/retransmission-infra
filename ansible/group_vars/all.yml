@@ -101,8 +101,9 @@ rl_group_rate: 20000          # Retransmits per second per (srcIP, groupIdx)
 rl_group_burst: 20000         # Burst size per (srcIP, groupIdx)
 rl_throttle_response: false   # Emit THROTTLED hint on seq/chain/group throttle (IP flood tier stays silent)
 
-# Optional binary flags. Each renders only when set: "" (or false) passes
-# nothing, so the binary default applies and an older binary keeps working.
+# Optional binary flags. Each renders only when set: "", null or false passes
+# nothing (a number, 0 included, renders), so the binary default applies and an
+# older binary keeps working.
 cache_arena_bytes: ""         # CACHE_ARENA_BYTES: memory backend: one block of this many bytes, allocated at start, is the byte cap (default 0 = per fragment)
 cache_max_bytes: ""           # CACHE_MAX_BYTES: memory backend byte cap (default 0 = no limit); not read when cache_arena_bytes is set
 control_group_compat: ""      # CONTROL_GROUP_COMPAT: asm-only (default) | both | derived; prefix of the BRC-129 0xFFFD groups advertised into

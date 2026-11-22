@@ -107,6 +107,8 @@ rl_throttle_response: false   # Emit THROTTLED hint on seq/chain/group throttle 
 cache_arena_bytes: ""         # CACHE_ARENA_BYTES: memory backend: one block of this many bytes, allocated at start, is the byte cap (default 0 = per fragment)
 cache_max_bytes: ""           # CACHE_MAX_BYTES: memory backend byte cap (default 0 = no limit); not read when cache_arena_bytes is set
 control_group_compat: ""      # CONTROL_GROUP_COMPAT: asm-only (default) | both | derived; prefix of the BRC-129 0xFFFD groups advertised into
+# DEDUP_BREAKER_WINDOW and DEDUP_CLAIM_TIMEOUT come with lightwebinc/retry-endpoint#47:
+# a binary built without it, the pinned retry_version v1.20.2 included, ignores both.
 dedup_breaker_window: ""      # DEDUP_BREAKER_WINDOW: after a dedup claim fails, skip claims this long (fail open at once); "0s" = no breaker (default 5s)
 dedup_claim_timeout: ""       # DEDUP_CLAIM_TIMEOUT: how long a dedup claim may wait on the backend before it fails open; must be > 0 (default 25ms)
 retry_ingress_gro: false      # INGRESS_GRO: UDP_GRO on each multicast ingress socket (Linux; a kernel without it is logged)
